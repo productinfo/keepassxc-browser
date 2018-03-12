@@ -15,8 +15,73 @@ var _detectedFields = 0;
 // Element id's containing input fields detected by MutationObserver
 var _observerIds = [];
 
-// Document URL
-let _documentURL = document.location.href;
+browser.runtime.onMessage.addListener(function(req, sender, callback) {
+    if ('action' in req) {
+        if (req.action === 'fill_user_pass_with_specific_login') {
+            if (cip.credentials[req.id]) {
+                let combination = null;
+                if (cip.u) {
+                    cip.setValueWithChange(cip.u, cip.credentials[req.id].login);
+                    combination = cipFields.getCombination('username', cip.u);
+                    browser.runtime.sendMessage({
+                        action: 'page_set_login_id', args: [req.id]
+                    });
+                    cip.u.focus();
+                }
+                if (cip.p) {
+                    cip.setValueWithChange(cip.p, cip.credentials[req.id].password);
+                    browser.runtime.sendMessage({
+                        action: 'page_set_login_id', args: [req.id]
+                    });
+                    combination = cipFields.getCombination('password', cip.p);
+                }
+
+                let list = [];
+                if (cip.fillInStringFields(combination.fields, cip.credentials[req.id].stringFields, list)) {
+                    cipForm.destroy(false, {'password': list.list[0], 'username': list.list[1]});
+                }
+            }
+        } else if (req.action === 'fill_user_pass') {
+            _called.manualFillRequested = 'both';
+            cip.receiveCredentialsIfNecessary().then((response) => {
+                cip.fillInFromActiveElement(false);
+            });
+        } else if (req.action === 'fill_pass_only') {
+            _called.manualFillRequested = 'pass';
+            cip.receiveCredentialsIfNecessary().then((response) => {
+                cip.fillInFromActiveElement(false, true); // passOnly to true
+            });
+        } else if (req.action === 'fill_totp') {
+            cip.receiveCredentialsIfNecessary().then((response) => {
+                cip.fillInFromActiveElementTOTPOnly(false);
+            });
+        } else if (req.action === 'activate_password_generator') {
+            cip.initPasswordGenerator(cipFields.getAllFields());
+        } else if (req.action === 'remember_credentials') {
+            cip.contextMenuRememberCredentials();
+        } else if (req.action === 'choose_credential_fields') {
+            cipDefine.init();
+        } else if (req.action === 'clear_credentials') {
+            cipEvents.clearCredentials();
+            callback();
+        } else if (req.action === 'activated_tab') {
+            cipEvents.triggerActivatedTab();
+            callback();
+        } else if (req.action === 'redetect_fields') {
+            browser.runtime.sendMessage({
+                action: 'load_settings',
+            }).then((response) => {
+                cip.settings = response;
+                cip.initCredentialFields(true);
+            });
+        } else if (req.action === 'ignore-site') {
+            cip.ignoreSite(req.args);
+        }
+        else if (req.action === 'check_database_hash' && 'hash' in req) {
+            cip.detectDatabaseChange(req.hash);
+        }
+    }
+});
 
 function _f(fieldId) {
     const field = (fieldId) ? jQuery('input[data-cip-id=\''+fieldId+'\']:first') : [];
@@ -776,6 +841,17 @@ cipFields.traverseParents = function(element, predicate, resultFn = () => true, 
     return defaultValFn();
 };
 
+cipFields.getAriaHidden = function(field) {
+    // Check the main element
+    const val = field.getAttribute('aria-hidden');
+    if (val) {
+        return val;
+    }
+
+    const ariaFunc = f => f.getAttribute('aria-hidden');
+    return cipFields.traverseParents(field, ariaFunc, ariaFunc, () => 'false');
+};
+
 cipFields.getOverflowHidden = function(field) {
     return cipFields.traverseParents(field, f => f.style.overflow === 'hidden');
 };
@@ -798,8 +874,7 @@ cipFields.isSearchField = function(target) {
     if (closestForm) {
         // Check form action
         const formAction = closestForm.getAttribute('action');
-        if (formAction && (formAction.toLowerCase().includes('search') && 
-            !formAction.toLowerCase().includes('research'))) {
+        if (formAction && formAction.includes('search')) {
             return true;
         }
 
@@ -807,7 +882,7 @@ cipFields.isSearchField = function(target) {
         const closestFormId = closestForm.getAttribute('id');
         const closestFormClass = closestForm.className;
         if (closestFormClass && (closestForm.className.toLowerCase().includes('search') || 
-            (closestFormId && closestFormId.toLowerCase().includes('search') && !closestFormId.toLowerCase().includes('research')))) {
+            (closestFormId && closestFormId.toLowerCase().includes('search')))) {
             return true;
         }
     }
@@ -833,6 +908,11 @@ cipFields.isVisible = function(field) {
 
     // Check element position and size
     if (rect.x < 0 || rect.y < 0 || rect.width < 8 || rect.height < 8) {
+        return false;
+    }
+
+    // Check aria-hidden property
+    if (cipFields.getAriaHidden(field) !== 'false') {
         return false;
     }
 
@@ -1180,12 +1260,7 @@ cipObserverHelper.getInputs = function(target) {
     // Only include input fields that match with cipObserverHelper.inputTypes
     let inputs = [];
     for (const i of inputFields) {
-        let type = i.getAttribute('type');
-        if (type) {
-            type = type.toLowerCase();
-        }
-
-        if (cipObserverHelper.inputTypes.includes(type)) {
+        if (cipObserverHelper.inputTypes.includes(i.getAttribute('type'))) {
             inputs.push(i);
         }
     }
@@ -1256,14 +1331,6 @@ cipObserverHelper.handleObserverRemove = function(target) {
     }
 };
 
-cipObserverHelper.detectURLChange = function() {
-    if (_documentURL !== document.location.href) {
-        _documentURL = document.location.href;
-        cipEvents.clearCredentials();
-        cip.initCredentialFields(true);
-    }
-};
-
 MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
 
 // Detects DOM changes in the document
@@ -1278,9 +1345,6 @@ let observer = new MutationObserver(function(mutations, observer) {
             continue;
         }
 
-        // Check document URL change and detect new fields
-        cipObserverHelper.detectURLChange();
-
         // Handle attributes only if CSS display is modified
         if (mut.type === 'attributes') {
             const newValue = mut.target.getAttribute(mut.attributeName);
@@ -1293,7 +1357,7 @@ let observer = new MutationObserver(function(mutations, observer) {
             }
         } else if (mut.type === 'childList') {
             cipObserverHelper.handleObserverAdd((mut.addedNodes.length > 0) ? mut.addedNodes[0] : mut.target);
-            cipObserverHelper.handleObserverRemove((mut.removedNodes.length > 0) ? mut.removedNodes[0] : mut.target);
+            cipObserverHelper.handleObserverRemove((mut.removedNodes.length > 0) ? mut.removedNodes[0] : mut.target);         
         }
     }
 });
@@ -1333,7 +1397,7 @@ cip.init = function() {
 // Switch credentials if database is changed or closed
 cip.detectDatabaseChange = function(response) {
     if (document.visibilityState !== 'hidden') {
-        if (response.new === '' && response.old !== '') {
+        if (response.new === 'no-hash' && response.old !== 'no-hash') {
             cipEvents.clearCredentials();
 
             browser.runtime.sendMessage({
@@ -1345,7 +1409,7 @@ cip.detectDatabaseChange = function(response) {
                 action: 'get_status',
                 args: [ true ]    // Set polling to true, this is an internal function call
             });
-        } else if (response.new !== '' && response.new !== response.old) {
+        } else if (response.new !== 'no-hash' && response.new !== response.old) {
             _called.retrieveCredentials = false;
             browser.runtime.sendMessage({
                 action: 'load_settings',
@@ -1417,7 +1481,6 @@ cip.initCredentialFields = function(forceCall) {
         }
 
         if (cip.settings.autoRetrieveCredentials && _called.retrieveCredentials === false && (cip.url && cip.submitUrl)) {
-            _called.retrieveCredentials = true;
             browser.runtime.sendMessage({
                 action: 'retrieve_credentials',
                 args: [ cip.url, cip.submitUrl ]

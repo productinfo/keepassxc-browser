@@ -1,21 +1,21 @@
 'use strict';
 
-const IGNORE_NOTHING = 'ignoreNothing';
-const IGNORE_NORMAL = 'ignoreNormal';
-const IGNORE_FULL = 'ignoreFull';
+const IGNORE_NOTHING = 'ignoreNothing'; // eslint-disable-line no-unused-vars
+const IGNORE_NORMAL = 'ignoreNormal'; // eslint-disable-line no-unused-vars
+const IGNORE_FULL = 'ignoreFull'; // eslint-disable-line no-unused-vars
 
 var schemeSegment = '(\\*|http|https|ws|wss|file|ftp)';
 var hostSegment = '(\\*|(?:\\*\\.)?(?:[^/*]+))?';
 var pathSegment = '(.*)';
 
-var isFirefox = function() {
+var isFirefox = function() { // eslint-disable-line no-unused-vars
     if (!(/Chrome/.test(navigator.userAgent) && /Google/.test(navigator.vendor))) {
         return true;
     }
     return false;
 };
 
-var showNotification = function(message) {
+var showNotification = function(message) { // eslint-disable-line no-unused-vars
     browser.notifications.create({
         'type': 'basic',
         'iconUrl': browser.extension.getURL('icons/keepassxc_64x64.png'),
@@ -34,7 +34,7 @@ var showNotification = function(message) {
  *
  * https://developer.mozilla.org/en-US/Add-ons/WebExtensions/Match_patterns
  */
-var matchPatternToRegExp = function(pattern) {
+var matchPatternToRegExp = function(pattern) { // eslint-disable-line no-unused-vars
     if (pattern === '') {
         return (/^(?:http|https|file|ftp|app):\/\//);
     }
@@ -87,17 +87,17 @@ var matchPatternToRegExp = function(pattern) {
     return new RegExp(regex);
 };
 
-var siteMatch = function(site, url) {
+var siteMatch = function(site, url) { // eslint-disable-line no-unused-vars
     const rx = matchPatternToRegExp(site);
     return url.match(rx);
 };
 
 // Checks if URL has only scheme and host without the last / char.
-var slashNeededForUrl = function(pattern) {
+var slashNeededForUrl = function(pattern) { // eslint-disable-line no-unused-vars
     const matchPattern = new RegExp(`^${schemeSegment}://${hostSegment}$`);
     return matchPattern.exec(pattern);
 };
 
-function tr(key, params) {
+function tr(key, params) { // eslint-disable-line no-unused-vars
     return browser.i18n.getMessage(key, params);
 };
