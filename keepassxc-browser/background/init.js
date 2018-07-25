@@ -7,14 +7,12 @@ keepass.migrateKeyRing().then(() => {
             keepass.connectToNative();
             keepass.generateNewKeyPair();
             keepass.changePublicKeys(null).then((pkRes) => {
+                keepass.enableAutomaticReconnect();
                 keepass.getDatabaseHash((gdRes) => {}, null);
             });
         });
     });
 });
-
-// Milliseconds for intervall (e.g. to update browserAction)
-const _interval = 250;
 
 /**
  * Generate information structure for created tab and invoke all needed
@@ -136,8 +134,3 @@ browser.commands.onCommand.addListener((command) => {
         });
     }
 });
-
-// Interval which updates the browserAction (e.g. blinking icon)
-window.setInterval(function() {
-    browserAction.update(_interval);
-}, _interval);

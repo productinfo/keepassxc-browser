@@ -22,6 +22,7 @@ keepass.keyId = 'keepassxc-browser-cryptokey-name';
 keepass.keyBody = 'keepassxc-browser-key';
 keepass.messageTimeout = 500; // milliseconds
 keepass.nonce = nacl.util.encodeBase64(nacl.randomBytes(keepass.keySize));
+keepass.reconnectLoop = null;
 
 const kpActions = {
     SET_LOGIN: 'set-login',
@@ -289,7 +290,7 @@ keepass.retrieveCredentials = function(callback, tab, url, submiturl, forceCallb
     }, tab, false, triggerUnlock);
 };
 
-keepass.generatePassword = function(callback, tab, forceCallback) {
+keepass.generatePassword = function(callback, tab) {
     if (!keepass.isConnected) {
         callback([]);
         return;
@@ -298,9 +299,7 @@ keepass.generatePassword = function(callback, tab, forceCallback) {
     keepass.testAssociation((taresponse) => {
         if (!taresponse) {
             browserAction.showDefault(null, tab);
-            if (forceCallback) {
-                callback([]);
-            }
+            callback([]);
             return;
         }
 
@@ -1010,25 +1009,32 @@ keepass.decrypt = function(input, nonce) {
 };
 
 keepass.enableAutomaticReconnect = function() {
-    setInterval(() => {
-        if (!keepass.isKeePassXCAvailable) {
-            keepass.connectToNative();
-            keepass.reconnect();
-        }
-    }, 1000);
+    // Disable for Windows if KeePassXC is older than 2.3.4
+    if (!page.settings.automaticReconnect || 
+        (navigator.platform.toLowerCase().includes('win') && !keepass.compareVersion('2.3.4', keepass.currentKeePassXC))) {
+        return;
+    }
+
+    if (keepass.reconnectLoop === null) {
+        keepass.reconnectLoop = setInterval(() => {
+            if (!keepass.isKeePassXCAvailable) {
+                keepass.connectToNative();
+                keepass.reconnect();
+            }
+        }, 1000);
+    }
+};
+
+keepass.disableAutomaticReconnect = function() {
+    clearInterval(keepass.reconnectLoop);
+    keepass.reconnectLoop = null;
 };
 
 keepass.reconnect = function(callback, tab) {
     return new Promise((resolve, reject) => {
         keepass.generateNewKeyPair();
         keepass.changePublicKeys(tab).then((pkRes) => {
-            // Database hash should be received if the reconnection succeeded
             keepass.getDatabaseHash((gdRes) => {
-                if (!gdRes) {
-                    reject(false);
-                    return;
-                }
-               
                 keepass.testAssociation((response) => {
                     keepass.isConfigured().then((configured) => {
                         resolve(configured);

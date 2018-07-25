@@ -1,27 +1,34 @@
+<!DOCTYPE html>
 <html>
   <head>
     <title data-i18n="popupTitle"></title>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="popup.css" />
     <link rel="stylesheet" href="../options/bootstrap.min.css" />
-    <script type="text/javascript" src="../browser-polyfill.min.js"></script>
-    <script type="text/javascript" src="../global.js"></script>
-    <script type="text/javascript" src="../jquery-3.3.1.min.js"></script>
-    <script type="text/javascript" src="../options/bootstrap.min.js" /></script>
-    <script type="text/javascript" src="popup_functions.js"></script>
-    <script type="text/javascript" src="popup_httpauth.js"></script>
+    <script src="../browser-polyfill.min.js"></script>
+    <script src="../global.js"></script>
+    <script src="../jquery-3.3.1.min.js"></script>
+    <script src="../options/bootstrap.min.js"></script>
+    <script src="popup_functions.js"></script>
+    <script src="popup_httpauth.js"></script>
+    <script defer src="../translate.js"></script>
   </head>
   <body>
     <div class="container">
       <div id="settings" class="settings">
+<<<<<<< HEAD
         <button id="btn-options" class="btn btn-sm btn-success"><span class="glyphicon glyphicon-cog"></span> <span data-i18n="popupSettingsText"/></button>
         <button id="btn-choose-credential-fields" class="btn btn-sm btn-warning"><span class="glyphicon glyphicon-list-alt"></span> <span data-i18n="popupChooseCredentialsText"/></button>
+=======
+        <button id="btn-options" class="btn btn-sm btn-success"><span class="glyphicon glyphicon-cog"></span><span data-i18n="popupSettingsText"></span></button>
+        <button id="btn-choose-credential-fields" class="btn btn-sm btn-warning"><span class="glyphicon glyphicon-list-alt"></span><span data-i18n="popupChooseCredentialsText"></span></button>
+>>>>>>> a815c7f... No jQuery
         <button id="lock-database-button" class="btn btn-danger" title="Lock database"><span class="glyphicon glyphicon-lock"></span></button>
 
         <div id="update-available" class="alert alert-danger">
           <span data-i18n="popupUpdateAvailable"></span>
           <br />
-          <a target="_blank" class="alert-link" href="https://keepassxc.org/download"><span data-i18n="popupDownloadNewVersion"/></a>.
+          <a target="_blank" class="alert-link" href="https://keepassxc.org/download"><span data-i18n="popupDownloadNewVersion"></span></a>.
         </div>
         </div>
 
@@ -29,10 +36,13 @@
         <p data-i18n="popupAuthText"></p>
         <div id="login-list" class="list-group"></div>
         <p>
+<<<<<<< HEAD
           <button id="btn-dismiss" class="btn btn-sm btn-danger"><span class="glyphicon glyphicon-remove"></span> <span data-i18n="popupButtonDismissHttpAuth"/></button>
+=======
+          <button id="btn-dismiss" class="btn btn-sm btn-danger"><span class="glyphicon glyphicon-remove"></span><span data-i18n="popupButtonDismissHttpAuth"></span></button>
+>>>>>>> a815c7f... No jQuery
         </p>
       </div>
     </div>
-    <script type="text/javascript" src="../translate.js"></script>
   </body>
 </html>
