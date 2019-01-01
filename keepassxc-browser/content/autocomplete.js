@@ -13,7 +13,7 @@ kpxcAutocomplete.create = function(input, showListInstantly = false) {
         showList(input);
     });
 
-    input.addEventListener('keypress', keyPress);
+    input.addEventListener('keydown', keyPress);
     input.setAttribute('autocomplete', 'off');
 
     if (showListInstantly) {
@@ -120,7 +120,9 @@ kpxcAutocomplete.create = function(input, showListInstantly = false) {
             }
 
             if (_index >= 0 && item && item[_index] !== undefined) {
-                item[_index].click();
+                input.value = e.currentTarget.value
+                fillPassword(input.value, _index);
+                closeList();
             }
         } else if (e.key === 'Escape' || e.key === 'Tab') {
             closeList();
