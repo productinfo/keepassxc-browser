@@ -64,6 +64,16 @@
             ],
             "run_at": "document_idle",
             "all_frames": true
+        },
+        {
+            "matches": [
+                "<all_urls>"
+            ],
+            "js": [
+                "content/requests.js"
+            ],
+            "run_at": "document_idle",
+            "all_frames": false
         }
     ],
     "commands": {
