@@ -40,25 +40,12 @@ browser.runtime.onMessage.addListener(function(req, sender) {
             cip.receiveCredentialsIfNecessary().then((response) => {
                 cip.fillInFromActiveElementTOTPOnly(false);
             });
-        } else if (req.action === 'activate_password_generator') {
-            cip.initPasswordGenerator(cipFields.getAllFields());
-        } else if (req.action === 'remember_credentials') {
-            cip.contextMenuRememberCredentials();
-        } else if (req.action === 'choose_credential_fields') {
-            cipDefine.init();
         } else if (req.action === 'clear_credentials') {
             cipEvents.clearCredentials();
             return Promise.resolve();
         } else if (req.action === 'activated_tab') {
             cipEvents.triggerActivatedTab();
             return Promise.resolve();
-        } else if (req.action === 'redetect_fields') {
-            browser.runtime.sendMessage({
-                action: 'load_settings',
-            }).then((response) => {
-                cip.settings = response;
-                cip.initCredentialFields(true);
-            });
         } else if (req.action === 'ignore-site') {
             cip.ignoreSite(req.args);
         }

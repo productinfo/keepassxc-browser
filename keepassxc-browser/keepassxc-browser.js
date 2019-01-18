@@ -28,6 +28,26 @@ function _fs(fieldId) {
     return (field.length > 0) ? field : null;
 }
 
+// These are executed in each frame
+browser.runtime.onMessage.addListener(function(req, sender) {
+    if ('action' in req) {
+        if (req.action === 'activate_password_generator') {
+            cip.initPasswordGenerator(cipFields.getAllFields());
+        } else if (req.action === 'remember_credentials') {
+            cip.contextMenuRememberCredentials();
+        } else if (req.action === 'choose_credential_fields') {
+            cipDefine.init();
+        } else if (req.action === 'redetect_fields') {
+            browser.runtime.sendMessage({
+                action: 'load_settings',
+            }).then((response) => {
+                cip.settings = response;
+                cip.initCredentialFields(true);
+            });
+        }
+    }
+});
+
 
 var cipAutocomplete = {};
 
