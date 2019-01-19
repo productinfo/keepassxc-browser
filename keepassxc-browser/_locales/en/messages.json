@@ -104,7 +104,7 @@
         "description": "Checkbox text below the password generator input field."
     },
     "passwordGeneratorBits": {
-        "message": "??? Bits",
+        "message": "$1 Bits",
         "description": "Bits of the generated password."
     },
     "passwordGeneratorTitle": {
@@ -114,6 +114,10 @@
     "passwordGeneratorGenerate": {
         "message": "Generate",
         "description": "Generate button text in password generator."
+    },
+    "passwordGeneratorTryAgain": {
+        "message": "Try again",
+        "description": "Generate button text in password generator when not connected."
     },
     "passwordGeneratorCopy": {
         "message": "Copy",
@@ -132,7 +136,7 @@
         "description": "Password icon title text."
     },
     "passwordGeneratorError": {
-        "message": "Cannot receive generated password.<br />Is KeePassXC running?",
+        "message": "Cannot receive generated password.\nIs KeePassXC running?",
         "description": "Password generator error text when KeePassXC is closed."
     },
     "defineDismiss": {
@@ -455,6 +459,10 @@
         "message": "Automatically retrieve credentials.",
         "description": "Automatically retrieve credentials checkbox text."
     },
+    "optionsCheckboxAutomaticReconnect": {
+        "message": "Automatically reconnect to KeePassXC.",
+        "description": "Auto-reconnect checkbox text."
+    },
     "optionsCheckboxAutoFillSingleEntry": {
         "message": "Automatically fill in single-credential entries.",
         "description": "Automatically fill-in single credential entry checkbox text."
@@ -530,6 +538,10 @@
     "optionsAutoRetrieveCredentialsHelpText": {
         "message": "KeePassXC-Browser will immediately retrieve credentials when a tab is activated.",
         "description": "Auto-Retrive Credentials option help text."
+    },
+    "optionsAutomaticReconnectHelpText": {
+        "message": "Reconnects automatically to KeePassXC when it is detected.",
+        "description": "Auto-reconnect option help text."
     },
     "optionsAutoFillSingleEntryHelpText": {
         "message": "Let KeePassXC-Browser automatically fill in credentials if it receives only a single entry.",
