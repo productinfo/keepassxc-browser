@@ -9,29 +9,29 @@ browser.runtime.onMessage.addListener(function(req, sender) {
                     cip.setValueWithChange(cip.u, cip.credentials[req.id].login);
                     combination = cipFields.getCombination('username', cip.u);
                     browser.runtime.sendMessage({
-                        action: 'page_set_login_id', args: [req.id]
+                        action: 'page_set_login_id', args: [ req.id ]
                     });
                     cip.u.focus();
                 }
                 if (cip.p) {
                     cip.setValueWithChange(cip.p, cip.credentials[req.id].password);
                     browser.runtime.sendMessage({
-                        action: 'page_set_login_id', args: [req.id]
+                        action: 'page_set_login_id', args: [ req.id ]
                     });
                     combination = cipFields.getCombination('password', cip.p);
                 }
 
                 let list = [];
                 if (cip.fillInStringFields(combination.fields, cip.credentials[req.id].stringFields, list)) {
-                    cipForm.destroy(false, {'password': list.list[0], 'username': list.list[1]});
+                    cipForm.destroy(false, { 'password': list.list[0], 'username': list.list[1] });
                 }
             }
-        } else if (req.action === 'fill_user_pass') {
+        } else if (req.action === 'fill_username_password') {
             _called.manualFillRequested = 'both';
             cip.receiveCredentialsIfNecessary().then((response) => {
                 cip.fillInFromActiveElement(false);
             });
-        } else if (req.action === 'fill_pass_only') {
+        } else if (req.action === 'fill_password') {
             _called.manualFillRequested = 'pass';
             cip.receiveCredentialsIfNecessary().then((response) => {
                 cip.fillInFromActiveElement(false, true); // passOnly to true
@@ -59,10 +59,9 @@ browser.runtime.onMessage.addListener(function(req, sender) {
                 cip.settings = response;
                 cip.initCredentialFields(true);
             });
-        } else if (req.action === 'ignore-site') {
+        } else if (req.action === 'ignore_site') {
             cip.ignoreSite(req.args);
-        }
-        else if (req.action === 'check_database_hash' && 'hash' in req) {
+        } else if (req.action === 'check_database_hash' && 'hash' in req) {
             cip.detectDatabaseChange(req.hash);
         }
     }
