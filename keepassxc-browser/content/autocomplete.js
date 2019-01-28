@@ -129,7 +129,7 @@ kpxcAutocomplete.create = function(input, showListInstantly = false) {
             --_index;
             activateItem(item);
         } else if (e.key === 'Enter' || e.key === 'Tab') {
-            if (input.value === '') {
+            if (input.value === '' && e.key === 'Enter') {
                 e.preventDefault();
             }
 
