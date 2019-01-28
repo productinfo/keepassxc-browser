@@ -22,7 +22,7 @@ kpxcAutocomplete.create = function(input, showListInstantly = false) {
 
     function showList(input) {
         closeList();
-        const div = kpxcUI.createElement('div', 'kpxcAutocomplete-items', {'id': 'kpxcAutocomplete-list'});
+        const div = kpxcUI.createElement('div', 'kpxcAutocomplete-items', { 'id': 'kpxcAutocomplete-list' });
 
         // Element position
         const rect = input.getBoundingClientRect();
@@ -35,7 +35,7 @@ kpxcAutocomplete.create = function(input, showListInstantly = false) {
         for (const c of kpxcAutocomplete.elements) {
             const item = document.createElement('div');
             item.textContent += c.label;
-            const itemInput = kpxcUI.createElement('input', '', {'type': 'hidden', 'value': c.value});
+            const itemInput = kpxcUI.createElement('input', '', { 'type': 'hidden', 'value': c.value });
             item.append(itemInput);
             item.addEventListener('click', function(e) {
                 // Save index for combination.loginId
@@ -65,7 +65,7 @@ kpxcAutocomplete.create = function(input, showListInstantly = false) {
     };
 
     function activateItem(item) {
-        if (!item) {
+        if (!item || item.length === 0) {
             return;
         }
 
@@ -106,25 +106,39 @@ kpxcAutocomplete.create = function(input, showListInstantly = false) {
         return list.getElementsByTagName('div');
     };
 
+    /*
+     * Keyboard shortcuts for autocomplete menu:
+     * - ArrowDown shows the list or selects item below, or the first item (last is active)
+     * - ArrowUp selects item above, or the last item (first is active)
+     * - Enter or Tab selects the item
+     * - Backspace and Delete shows the list if input field is empty. First item is activated
+    */
     function keyPress(e) {
         const item = getAllItems();
         if (e.key === 'ArrowDown') {
-            ++_index;
-            activateItem(item);
+            // If the list is now shown, show it
+            if (item.length === 0) {
+                _index = -1;
+                showList(input);
+            } else {
+                // Activate next item
+                ++_index;
+                activateItem(item);
+            }
         } else if (e.key === 'ArrowUp') {
-             --_index;
+            --_index;
             activateItem(item);
-        } else if (e.key === 'Enter') {
+        } else if (e.key === 'Enter' || e.key === 'Tab') {
             if (input.value === '') {
                 e.preventDefault();
             }
 
             if (_index >= 0 && item && item[_index] !== undefined) {
-                input.value = e.currentTarget.value
+                input.value = e.currentTarget.value;
                 fillPassword(input.value, _index);
                 closeList();
             }
-        } else if (e.key === 'Escape' || e.key === 'Tab') {
+        } else if (e.key === 'Escape') {
             closeList();
         } else if ((e.key === 'Backspace' || e.key === 'Delete') && input.value === '') {
             // Show menu when input field has no value and backspace is pressed
@@ -138,7 +152,7 @@ kpxcAutocomplete.create = function(input, showListInstantly = false) {
         cipFields.prepareId(fieldId);
         const combination = cipFields.getCombination('username', fieldId);
         combination.loginId = index;
-   
+
         cip.fillInCredentials(combination, false, false);
         input.setAttribute('fetched', true);
     };
