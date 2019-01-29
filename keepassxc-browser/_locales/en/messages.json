@@ -128,7 +128,15 @@
         "description": "Fill and copy button text in password generator."
     },
     "passwordGeneratorErrorTooLong": {
-        "message": "Error:\nThe generated password is longer than the allowed length!\nIt has been cut to fit the length.\n\nPlease remember the new password!",
+        "message": "Error: The generated password is longer than the allowed length!",
+        "description": "A warning text shown in the password generator."
+    },
+    "passwordGeneratorErrorTooLongCut": {
+        "message": "It has been cut to fit the length.",
+        "description": "A warning text shown in the password generator."
+    },
+    "passwordGeneratorErrorTooLongRemember": {
+        "message": "Please remember the new password!",
         "description": "A warning text shown in the password generator."
     },
     "passwordGeneratorGenerateText": {
@@ -136,7 +144,11 @@
         "description": "Password icon title text."
     },
     "passwordGeneratorError": {
-        "message": "Cannot receive generated password.\nIs KeePassXC running?",
+        "message": "Cannot receive generated password.",
+        "description": "Password generator error text when KeePassXC is closed."
+    },
+    "passwordGeneratorErrorIsRunning": {
+        "message": "Is KeePassXC running and connected?",
         "description": "Password generator error text when KeePassXC is closed."
     },
     "defineDismiss": {
@@ -200,27 +212,31 @@
         "description": "Shown when no username is set in the credentials."
     },
     "credentialsNoLoginsFound": {
-        "message": "Error:\nNo logins found.",
+        "message": "Error No logins found.",
         "description": "Shown when no credentials are found for the current page."
     },
     "credentialsMultipleFound": {
-        "message": "Error:\nMore than one login was found in KeePassXC!\nPress the KeePassXC-Browser icon for more options.",
+        "message": "Error: More than one login was found in KeePassXC!",
+        "description": "Alert message when trying to fill username and/or password when multiple credentials are found."
+    },
+    "credentialsMultipleFoundSecondLine": {
+        "message": "Press the KeePassXC-Browser icon for more options.",
         "description": "Alert message when trying to fill username and/or password when multiple credentials are found."
     },
     "credentialsNoUsernameFound": {
-        "message": "Error:\nNo credentials for the given username found.",
+        "message": "Error: No credentials for the given username found.",
         "description": "Alert message when no credentials are found for the given username."
     },
     "fieldsFill": {
-        "message": "Error:\nCannot find fields to fill in.",
+        "message": "Error: Cannot find fields to fill in.",
         "description": "Alert message when no fields are found to fill in."
     },
     "fieldsNoPasswordField": {
-        "message": "Error:\nUnable to find a password field.",
+        "message": "Error: Unable to find a password field.",
         "description": "Message shown when no password fields are found."
     },
     "rememberNothingChanged": {
-        "message": "Error:\nCould not detect changed credentials.",
+        "message": "Error: Could not detect changed credentials.",
         "description": "Message shown when trying to save credentials that haven't changed."
     },
     "popupTitle": {

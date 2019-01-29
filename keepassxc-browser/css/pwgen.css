@@ -94,6 +94,8 @@
     font-size: 12px !important;
     font-style: normal !important;
     font-weight: normal !important;
+    text-align: center;
+    width: 100%;
 }
 
 .kpxc-pwgen-icon {

@@ -118,6 +118,11 @@ kpxcPassword.setIconPosition = function(icon, field) {
 
 kpxcPassword.createDialog = function() {
     if (kpxcPassword.created) {
+        // If database is open again, generate a new password right away
+        const input = $('.kpxc-pwgen-input');
+        if (input.style.display === 'none') {
+            kpxcPassword.generate();
+        }
         return;
     }
     kpxcPassword.created = true;    
@@ -225,7 +230,9 @@ kpxcPassword.fill = function(e) {
         const password = $('.kpxc-pwgen-input');
         if (field.getAttribute('maxlength')) {
             if (password.value.length > field.getAttribute('maxlength')) {
-                const message = tr('passwordGeneratorErrorTooLong');
+                const message = tr('passwordGeneratorErrorTooLong') + '\r\n' +
+                    tr('passwordGeneratorErrorTooLongCut') + '\r\n' + tr('passwordGeneratorErrorTooLongRemember');
+                message.style.whiteSpace = 'pre';
                 browser.runtime.sendMessage({
                     action: 'show_notification',
                     args: [ message ]
@@ -289,7 +296,11 @@ kpxcPassword.callbackGeneratedPassword = function(entries) {
             const input = $('.kpxc-pwgen-input');
             input.style.display = 'none';
 
-            const errorMessage = kpxcUI.createElement('div', '', { 'id': 'kpxc-pwgen-error' }, tr('passwordGeneratorError'));
+            const errorMessage = kpxcUI.createElement('div', '', {
+                'id': 'kpxc-pwgen-error' },
+                tr('passwordGeneratorError') + '\r\n' + tr('passwordGeneratorErrorIsRunning')
+            );
+            errorMessage.style.whiteSpace = 'pre';
             input.parentElement.append(errorMessage);
 
             kpxcPassword.disableButtons();
@@ -353,7 +364,7 @@ kpxcPassword.disableButtons = function() {
 };
 
 // Handle icon position on window resize
-window.addEventListener('resize', function(event) {
+window.addEventListener('resize', function(e) {
     if (kpxcPassword.inputField && kpxcPassword.icon) {
         kpxcPassword.setIconPosition(kpxcPassword.icon, kpxcPassword.inputField);
     }
