@@ -74,7 +74,7 @@ kpxcPassword.createIcon = function(field) {
     icon.addEventListener('click', function(e) {
         e.preventDefault();
 
-        if (!cipFields.isVisible(field)) {
+        if (!kpxcFields.isVisible(field)) {
             document.body.removeChild(icon);
             field.removeAttribute('kpxc-password-generator');
             return;
@@ -327,9 +327,9 @@ kpxcPassword.checkObservedElements = function() {
             if (!field || field.length !== 1) {
                 iconField.remove();
                 kpxcPassword.observedIcons.splice(index, 1);
-            } else if (!cipFields.isVisible(field)) {
+            } else if (!kpxcFields.isVisible(field)) {
                 iconField.hide();
-            } else if (cipFields.isVisible(field)) {
+            } else if (kpxcFields.isVisible(field)) {
                 iconField.show();
                 kpxcPassword.setIconPosition(iconField, field);
                 field.setAttribute('kpxc-password-generator', true);

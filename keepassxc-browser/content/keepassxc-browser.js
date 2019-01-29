@@ -22,44 +22,44 @@ let _documentURL = document.location.href;
 browser.runtime.onMessage.addListener(function(req, sender) {
     if ('action' in req) {
         if (req.action === 'activate_password_generator') {
-            cip.initPasswordGenerator(cipFields.getAllFields());
+            kpxc.initPasswordGenerator(kpxcFields.getAllFields());
         } else if (req.action === 'remember_credentials') {
-            cip.contextMenuRememberCredentials();
+            kpxc.contextMenuRememberCredentials();
         } else if (req.action === 'choose_credential_fields') {
             kpxcDefine.init();
         } else if (req.action === 'redetect_fields') {
             browser.runtime.sendMessage({
                 action: 'load_settings',
             }).then((response) => {
-                cip.settings = response;
-                cip.initCredentialFields(true);
+                kpxc.settings = response;
+                kpxc.initCredentialFields(true);
             });
         }
     }
 });
 
 function _f(fieldId) {
-    const inputs = document.querySelectorAll('input[data-kpxc-id=\''+fieldId+'\']');
+    const inputs = document.querySelectorAll('input[data-kpxc-id=\'' + fieldId + '\']');
     return inputs.length > 0 ? inputs[0] : null;
 }
 
 function _fs(fieldId) {
-    const inputs = document.querySelectorAll('input[data-kpxc-id=\''+fieldId+'\'], select[data-kpxc-id=\''+fieldId+'\']');
+    const inputs = document.querySelectorAll('input[data-kpxc-id=\'' + fieldId + '\'], select[data-kpxc-id=\'' + fieldId + '\']');
     return inputs.length > 0 ? inputs[0] : null;
 }
 
 
-var cipForm = {};
+var kpxcForm = {};
 
-cipForm.init = function(form, credentialFields) {
-    if (!form.getAttribute('cipForm-initialized') && (credentialFields.password || credentialFields.username)) {
-        form.setAttribute('cipForm-initialized', true);
-        cipForm.setInputFields(form, credentialFields);
-        form.addEventListener('submit', cipForm.onSubmit);
+kpxcForm.init = function(form, credentialFields) {
+    if (!form.getAttribute('kpxcForm-initialized') && (credentialFields.password || credentialFields.username)) {
+        form.setAttribute('kpxcForm-initialized', true);
+        kpxcForm.setInputFields(form, credentialFields);
+        form.addEventListener('submit', kpxcForm.onSubmit);
     }
 };
 
-cipForm.destroy = function(form, credentialFields) {
+kpxcForm.destroy = function(form, credentialFields) {
     if (form === false && credentialFields) {
         const field = _f(credentialFields.password) || _f(credentialFields.username);
         if (field) {
@@ -72,14 +72,14 @@ cipForm.destroy = function(form, credentialFields) {
     }
 };
 
-cipForm.setInputFields = function(form, credentialFields) {
-    form.setAttribute('cipUsername', credentialFields.username);
-    form.setAttribute('cipPassword', credentialFields.password);
+kpxcForm.setInputFields = function(form, credentialFields) {
+    form.setAttribute('kpxcUsername', credentialFields.username);
+    form.setAttribute('kpxcPassword', credentialFields.password);
 };
 
-cipForm.onSubmit = function() {
-    const usernameId = this.getAttribute('cipUsername');
-    const passwordId = this.getAttribute('cipPassword');
+kpxcForm.onSubmit = function() {
+    const usernameId = this.getAttribute('kpxcUsername');
+    const passwordId = this.getAttribute('kpxcPassword');
 
     let usernameValue = '';
     let passwordValue = '';
@@ -94,25 +94,25 @@ cipForm.onSubmit = function() {
         passwordValue = passwordField.value;
     }
 
-    cip.rememberCredentials(usernameValue, passwordValue);
+    kpxc.rememberCredentials(usernameValue, passwordValue);
 };
 
 
-var cipFields = {};
+var kpxcFields = {};
 
-cipFields.inputQueryPattern = 'input[type=\'text\'], input[type=\'email\'], input[type=\'password\'], input[type=\'tel\'], input[type=\'number\'], input:not([type])';
+kpxcFields.inputQueryPattern = 'input[type=\'text\'], input[type=\'email\'], input[type=\'password\'], input[type=\'tel\'], input[type=\'number\'], input:not([type])';
 // unique number as new IDs for input fields
-cipFields.uniqueNumber = 342845638;
+kpxcFields.uniqueNumber = 342845638;
 // objects with combination of username + password fields
-cipFields.combinations = [];
+kpxcFields.combinations = [];
 
-cipFields.setUniqueId = function(field) {
+kpxcFields.setUniqueId = function(field) {
     if (field && !field.getAttribute('data-kpxc-id')) {
         // use ID of field if it is unique
         // yes, it should be, but there are many bad developers outside...
         const fieldId = field.getAttribute('id');
         if (fieldId) {
-            const foundIds = document.querySelectorAll('input#' + cipFields.prepareId(fieldId));
+            const foundIds = document.querySelectorAll('input#' + kpxcFields.prepareId(fieldId));
             if (foundIds.length === 1) {
                 field.setAttribute('data-kpxc-id', fieldId);
                 return;
@@ -120,12 +120,12 @@ cipFields.setUniqueId = function(field) {
         }
 
         // create own ID if no ID is set for this field
-        cipFields.uniqueNumber += 1;
-        field.setAttribute('data-kpxc-id', 'kpxcpw'+String(cipFields.uniqueNumber));
+        kpxcFields.uniqueNumber += 1;
+        field.setAttribute('data-kpxc-id', 'kpxcpw'+String(kpxcFields.uniqueNumber));
     }
 };
 
-cipFields.prepareId = function(id) {
+kpxcFields.prepareId = function(id) {
     return id.replace(/[:#.,\[\]\(\)' "]/g, function(m) { return '\\'+m; });
 };
 
@@ -136,7 +136,7 @@ cipFields.prepareId = function(id) {
  * @param {function} resultFn       Callback function of type (HTMLElement) => {*} called for the first matching element
  * @param {fun} defaultValFn        Fallback return value supplier, if no element matching the predicate can be found
  */
-cipFields.traverseParents = function(element, predicate, resultFn = () => true, defaultValFn = () => false) {
+kpxcFields.traverseParents = function(element, predicate, resultFn = () => true, defaultValFn = () => false) {
     for (let f = element.parentElement; f !== null; f = f.parentElement) {
         if (predicate(f)) {
             return resultFn(f);
@@ -145,13 +145,13 @@ cipFields.traverseParents = function(element, predicate, resultFn = () => true, 
     return defaultValFn();
 };
 
-cipFields.getOverflowHidden = function(field) {
-    return cipFields.traverseParents(field, f => f.style.overflow === 'hidden');
+kpxcFields.getOverflowHidden = function(field) {
+    return kpxcFields.traverseParents(field, f => f.style.overflow === 'hidden');
 };
 
 // Checks if input field is a search field. Attributes or form action containing 'search', or parent element holding
 // role="search" will be identified as a search field.
-cipFields.isSearchField = function(target) {
+kpxcFields.isSearchField = function(target) {
     const attributes = target.attributes;
 
     // Check element attributes
@@ -182,7 +182,7 @@ cipFields.isSearchField = function(target) {
 
     // Check parent elements for role="search"
     const roleFunc = f => f.getAttribute('role');
-    const roleValue = cipFields.traverseParents(target, roleFunc, roleFunc, () => null);
+    const roleValue = kpxcFields.traverseParents(target, roleFunc, roleFunc, () => null);
     if (roleValue && roleValue === 'search') {
         return true;
     }
@@ -190,7 +190,7 @@ cipFields.isSearchField = function(target) {
     return false;
 };
 
-cipFields.isVisible = function(field) {
+kpxcFields.isVisible = function(field) {
     const rect = field.getBoundingClientRect();
 
     // Check CSS visibility
@@ -207,12 +207,12 @@ cipFields.isVisible = function(field) {
     return true;
 };
 
-cipFields.getAllFields = function() {
-    let fields = [];
-    const inputs = cipObserverHelper.getInputs(document);
+kpxcFields.getAllFields = function() {
+    const fields = [];
+    const inputs = kpxcObserverHelper.getInputs(document);
     for (const i of inputs) {
-        if (cipFields.isVisible(i) && !cipFields.isSearchField(i)) {
-            cipFields.setUniqueId(i);
+        if (kpxcFields.isVisible(i) && !kpxcFields.isSearchField(i)) {
+            kpxcFields.setUniqueId(i);
             fields.push(i);
         }
     }
@@ -221,17 +221,17 @@ cipFields.getAllFields = function() {
     return fields;
 };
 
-cipFields.prepareVisibleFieldsWithID = function(pattern) {
+kpxcFields.prepareVisibleFieldsWithID = function(pattern) {
     const patterns = document.querySelectorAll(pattern);
     for (const i of patterns) {
-        if (cipFields.isVisible(i) && i.style.visibility !== 'hidden' && i.style.visibility !== 'collapsed') {
-           cipFields.setUniqueId(i);
+        if (kpxcFields.isVisible(i) && i.style.visibility !== 'hidden' && i.style.visibility !== 'collapsed') {
+            kpxcFields.setUniqueId(i);
         }
     }
 };
 
-cipFields.getAllCombinations = function(inputs) {
-    let fields = [];
+kpxcFields.getAllCombinations = function(inputs) {
+    const fields = [];
     let uField = null;
 
     for (const i of inputs) {
@@ -245,11 +245,10 @@ cipFields.getAllCombinations = function(inputs) {
                 };
                 fields.push(combination);
 
-                // reset selected username field
+                // Reset selected username field
                 uField = null;
-            }
-            else {
-                // username field
+            } else {
+                // Username field
                 uField = i;
             }
         }
@@ -266,25 +265,25 @@ cipFields.getAllCombinations = function(inputs) {
     return fields;
 };
 
-cipFields.getCombination = function(givenType, fieldId) {
-    if (cipFields.combinations.length === 0) {
-        if (cipFields.useDefinedCredentialFields()) {
-            return cipFields.combinations[0];
+kpxcFields.getCombination = function(givenType, fieldId) {
+    if (kpxcFields.combinations.length === 0) {
+        if (kpxcFields.useDefinedCredentialFields()) {
+            return kpxcFields.combinations[0];
         }
     }
-    // use defined credential fields (already loaded into combinations)
-    const location = cip.getDocumentLocation();
-    if (cip.settings['defined-custom-fields'] && cip.settings['defined-custom-fields'][location]) {
-        return cipFields.combinations[0];
+    // Use defined credential fields (already loaded into combinations)
+    const location = kpxc.getDocumentLocation();
+    if (kpxc.settings['defined-custom-fields'] && kpxc.settings['defined-custom-fields'][location]) {
+        return kpxcFields.combinations[0];
     }
 
-    for (let c of cipFields.combinations) {
+    for (let c of kpxcFields.combinations) {
         if (c[givenType] === fieldId) {
             return c;
         }
     }
 
-    // find new combination
+    // Find new combination
     let combination = {
         username: null,
         password: null
@@ -292,22 +291,21 @@ cipFields.getCombination = function(givenType, fieldId) {
 
     let newCombi = false;
     if (givenType === 'username') {
-        const passwordField = cipFields.getPasswordField(fieldId, true);
+        const passwordField = kpxcFields.getPasswordField(fieldId, true);
         let passwordId = null;
         if (passwordField && passwordField.value.length > 0) {
-            passwordId = cipFields.prepareId(passwordField.getAttribute('data-kpxc-id'));
+            passwordId = kpxcFields.prepareId(passwordField.getAttribute('data-kpxc-id'));
         }
         combination = {
             username: fieldId,
             password: passwordId
         };
         newCombi = true;
-    }
-    else if (givenType === 'password') {
-        const usernameField = cipFields.getUsernameField(fieldId, true);
+    } else if (givenType === 'password') {
+        const usernameField = kpxcFields.getUsernameField(fieldId, true);
         let usernameId = null;
         if (usernameField && usernameField.value.length > 0) {
-            usernameId = cipFields.prepareId(usernameField.getAttribute('data-kpxc-id'));
+            usernameId = kpxcFields.prepareId(usernameField.getAttribute('data-kpxc-id'));
         }
         combination = {
             username: usernameId,
@@ -317,12 +315,12 @@ cipFields.getCombination = function(givenType, fieldId) {
     }
 
     if (combination.username || combination.password) {
-        cipFields.combinations.push(combination);
+        kpxcFields.combinations.push(combination);
     }
 
     if (combination.username) {
-        if (cip.credentials.length > 0) {
-            cip.preparePageForMultipleCredentials(cip.credentials);
+        if (kpxc.credentials.length > 0) {
+            kpxc.preparePageForMultipleCredentials(kpxc.credentials);
         }
     }
 
@@ -333,9 +331,9 @@ cipFields.getCombination = function(givenType, fieldId) {
 };
 
 /**
-* return the username field or null if it not exists
+* Return the username field or null if it not exists
 */
-cipFields.getUsernameField = function(passwordId, checkDisabled) {
+kpxcFields.getUsernameField = function(passwordId, checkDisabled) {
     const passwordField = _f(passwordId);
     if (!passwordField) {
         return null;
@@ -344,27 +342,25 @@ cipFields.getUsernameField = function(passwordId, checkDisabled) {
     const form = passwordField.closest('form');
     let usernameField = null;
 
-    // search all inputs on this one form
+    // Search all inputs on this one form
     if (form) {
-        const inputs = form.querySelectorAll(cipFields.inputQueryPattern);
+        const inputs = form.querySelectorAll(kpxcFields.inputQueryPattern);
         for (const i of inputs) {
-            cipFields.setUniqueId(i);
+            kpxcFields.setUniqueId(i);
             if (i.getAttribute('data-kpxc-id') === passwordId) {
-                return false;
+                return false; // Break
             }
 
             if (i.getAttribute('type') && i.getAttribute('type').toLowerCase() === 'password') {
-                // continue
-                return true;
+                return true; // Continue
             }
 
             usernameField = i;
         }
-    }
-    // search all inputs on page
-    else {
-        const inputs = cipFields.getAllFields();
-        cip.initPasswordGenerator(inputs);
+    } else {
+        // Search all inputs on page
+        const inputs = kpxcFields.getAllFields();
+        kpxc.initPasswordGenerator(inputs);
         for (const i of inputs) {
             if (i.getAttribute('data-kpxc-id') === passwordId) {
                 break;
@@ -380,8 +376,8 @@ cipFields.getUsernameField = function(passwordId, checkDisabled) {
 
     if (usernameField && !checkDisabled) {
         const usernameId = usernameField.getAttribute('data-kpxc-id');
-        // check if usernameField is already used by another combination
-        for (const c of cipFields.combinations) {
+        // Check if usernameField is already used by another combination
+        for (const c of kpxcFields.combinations) {
             if (c.username === usernameId) {
                 usernameField = null;
                 break;
@@ -389,14 +385,14 @@ cipFields.getUsernameField = function(passwordId, checkDisabled) {
         }
     }
 
-    cipFields.setUniqueId(usernameField);
+    kpxcFields.setUniqueId(usernameField);
     return usernameField;
 };
 
 /**
-* return the password field or null if it not exists
+* Return the password field or null if it not exists
 */
-cipFields.getPasswordField = function(usernameId, checkDisabled) {
+kpxcFields.getPasswordField = function(usernameId, checkDisabled) {
     const usernameField = _f(usernameId);
     if (!usernameField) {
         return null;
@@ -405,7 +401,7 @@ cipFields.getPasswordField = function(usernameId, checkDisabled) {
     const form = usernameField.closest('form');
     let passwordField = null;
 
-    // search all inputs on this one form
+    // Search all inputs on this one form
     if (form) {
         const inputs = form.querySelectorAll('input[type=\'password\']');
         if (inputs.length > 0) {
@@ -415,15 +411,14 @@ cipFields.getPasswordField = function(usernameId, checkDisabled) {
             passwordField = null;
         }
 
-        if (cip.settings.usePasswordGenerator) {
+        if (kpxc.settings.usePasswordGenerator) {
             kpxcPassword.init();
             kpxcPassword.initField(passwordField);
         }
-    }
-    // search all inputs on page
-    else {
-        const inputs = cipFields.getAllFields();
-        cip.initPasswordGenerator(inputs);
+    } else {
+        // Search all inputs on page
+        const inputs = kpxcFields.getAllFields();
+        kpxc.initPasswordGenerator(inputs);
 
         let active = false;
         for (const i of inputs) {
@@ -439,8 +434,8 @@ cipFields.getPasswordField = function(usernameId, checkDisabled) {
 
     if (passwordField && !checkDisabled) {
         const passwordId = passwordField.getAttribute('data-kpxc-id');
-        // check if passwordField is already used by another combination
-        for (const c of cipFields.combinations) {
+        // Check if passwordField is already used by another combination
+        for (const c of kpxcFields.combinations) {
             if (c.password === passwordId) {
                 passwordField = null;
                 break;
@@ -448,37 +443,37 @@ cipFields.getPasswordField = function(usernameId, checkDisabled) {
         }
     }
 
-    cipFields.setUniqueId(passwordField);
+    kpxcFields.setUniqueId(passwordField);
     return passwordField;
 };
 
-cipFields.prepareCombinations = function(combinations) {
+kpxcFields.prepareCombinations = function(combinations) {
     for (const c of combinations) {
         const pwField = _f(c.password);
-        // needed for auto-complete: don't overwrite manually filled-in password field
-        if (pwField && !pwField.getAttribute('cipFields-onChange')) {
-            pwField.setAttribute('cipFields-onChange', true);
+        // Needed for auto-complete: don't overwrite manually filled-in password field
+        if (pwField && !pwField.getAttribute('kpxcFields-onChange')) {
+            pwField.setAttribute('kpxcFields-onChange', true);
             pwField.onchange = function() {
                 this.setAttribute('unchanged', false);
             }
         }
 
-        // initialize form-submit for remembering credentials
+        // Initialize form-submit for remembering credentials
         const fieldId = c.password || c.username;
         const field = _f(fieldId);
         if (field) {
             const form = field.closest('form');
             if (form && form.length > 0) {
-                cipForm.init(form, c);
+                kpxcForm.init(form, c);
             }
         }
     }
 };
 
-cipFields.useDefinedCredentialFields = function() {
-    const location = cip.getDocumentLocation();
-    if (cip.settings['defined-credential-fields'] && cip.settings['defined-credential-fields'][location]) {
-        const creds = cip.settings['defined-credential-fields'][location];
+kpxcFields.useDefinedCredentialFields = function() {
+    const location = kpxc.getDocumentLocation();
+    if (kpxc.settings['defined-credential-fields'] && kpxc.settings['defined-credential-fields'][location]) {
+        const creds = kpxc.settings['defined-credential-fields'][location];
 
         let found = _f(creds.username) || _f(creds.password);
         for (const i of creds.fields) {
@@ -489,13 +484,13 @@ cipFields.useDefinedCredentialFields = function() {
         }
 
         if (found) {
-            let fields = {
+            const fields = {
                 username: creds.username,
                 password: creds.password,
                 fields: creds.fields
             };
-            cipFields.combinations = [];
-            cipFields.combinations.push(fields);
+            kpxcFields.combinations = [];
+            kpxcFields.combinations.push(fields);
 
             return true;
         }
@@ -504,18 +499,18 @@ cipFields.useDefinedCredentialFields = function() {
     return false;
 };
 
-var cipObserverHelper = {};
-cipObserverHelper.inputTypes = [
+var kpxcObserverHelper = {};
+kpxcObserverHelper.inputTypes = [
     'text',
     'email',
     'password',
     'tel',
     'number',
-    null    // Input field can be without any type. Include these to the list.
+    null // Input field can be without any type. Include these to the list.
 ];
 
 // Ignores all nodes that doesn't contain elements
-cipObserverHelper.ignoredNode = function(target) {
+kpxcObserverHelper.ignoredNode = function(target) {
     if (target.nodeType === Node.ATTRIBUTE_NODE ||
         target.nodeType === Node.TEXT_NODE ||
         target.nodeType === Node.CDATA_SECTION_NODE ||
@@ -528,15 +523,15 @@ cipObserverHelper.ignoredNode = function(target) {
     return false;
 };
 
-cipObserverHelper.getInputs = function(target) {
+kpxcObserverHelper.getInputs = function(target) {
     // Ignores target element if it's not an element node
-    if (cipObserverHelper.ignoredNode(target)) {
+    if (kpxcObserverHelper.ignoredNode(target)) {
         return [];
     }
 
     // Filter out any input fields with type 'hidden' right away
-    let inputFields = [];
-    Array.from(target.getElementsByTagName('input')).forEach(e => {
+    const inputFields = [];
+    Array.from(target.getElementsByTagName('input')).forEach((e) => {
         if (e.type !== 'hidden') {
             inputFields.push(e);
         }
@@ -547,26 +542,26 @@ cipObserverHelper.getInputs = function(target) {
         return [];
     }
 
-    // Only include input fields that match with cipObserverHelper.inputTypes
-    let inputs = [];
+    // Only include input fields that match with kpxcObserverHelper.inputTypes
+    const inputs = [];
     for (const i of inputFields) {
         let type = i.getAttribute('type');
         if (type) {
             type = type.toLowerCase();
         }
 
-        if (cipObserverHelper.inputTypes.includes(type)) {
+        if (kpxcObserverHelper.inputTypes.includes(type)) {
             inputs.push(i);
         }
     }
     return inputs;
 };
 
-cipObserverHelper.getId = function(target) {
+kpxcObserverHelper.getId = function(target) {
     return target.classList.length === 0 ? target.id : target.classList;
 };
 
-cipObserverHelper.ignoredElement = function(target) {
+kpxcObserverHelper.ignoredElement = function(target) {
     // Ignore elements that do not have a className (including SVG)
     if (typeof target.className !== 'string') {
         return true;
@@ -581,43 +576,43 @@ cipObserverHelper.ignoredElement = function(target) {
     return false;
 };
 
-cipObserverHelper.handleObserverAdd = function(target) {
-    if (cipObserverHelper.ignoredElement(target)) {
+kpxcObserverHelper.handleObserverAdd = function(target) {
+    if (kpxcObserverHelper.ignoredElement(target)) {
         return;
     }
 
-    const inputs = cipObserverHelper.getInputs(target);
+    const inputs = kpxcObserverHelper.getInputs(target);
     if (inputs.length === 0) {
         return;
     }
 
     const neededLength = _detectedFields === 1 ? 0 : 1;
-    const id = cipObserverHelper.getId(target);
+    const id = kpxcObserverHelper.getId(target);
     if (inputs.length > neededLength && !_observerIds.includes(id)) {
         // Save target element id for preventing multiple calls to initCredentialsFields()
         _observerIds.push(id);
 
         // Sometimes the settings haven't been loaded before new input fields are detected
-        if (Object.keys(cip.settings).length === 0) {
-            cip.init();
+        if (Object.keys(kpxc.settings).length === 0) {
+            kpxc.init();
         } else {
-            cip.initCredentialFields(true);
+            kpxc.initCredentialFields(true);
         }
     }
 };
 
-cipObserverHelper.handleObserverRemove = function(target) {
-    if (cipObserverHelper.ignoredElement(target)) {
+kpxcObserverHelper.handleObserverRemove = function(target) {
+    if (kpxcObserverHelper.ignoredElement(target)) {
         return;
     }
 
-    const inputs = cipObserverHelper.getInputs(target);
+    const inputs = kpxcObserverHelper.getInputs(target);
     if (inputs.length === 0) {
         return;
     }
 
     // Remove target element id from the list
-    const id = cipObserverHelper.getId(target);
+    const id = kpxcObserverHelper.getId(target);
     if (_observerIds.includes(id)) {
         const index = _observerIds.indexOf(id);
         if (index >= 0) {
@@ -626,11 +621,11 @@ cipObserverHelper.handleObserverRemove = function(target) {
     }
 };
 
-cipObserverHelper.detectURLChange = function() {
+kpxcObserverHelper.detectURLChange = function() {
     if (_documentURL !== document.location.href) {
         _documentURL = document.location.href;
-        cipEvents.clearCredentials();
-        cip.initCredentialFields(true);
+        kpxcEvents.clearCredentials();
+        kpxc.initCredentialFields(true);
     }
 };
 
@@ -649,21 +644,21 @@ let observer = new MutationObserver(function(mutations, observer) {
         }
 
         // Check document URL change and detect new fields
-        cipObserverHelper.detectURLChange();
+        kpxcObserverHelper.detectURLChange();
 
         // Handle attributes only if CSS display is modified
         if (mut.type === 'attributes') {
             const newValue = mut.target.getAttribute(mut.attributeName);
             if (newValue && (newValue.includes('display') || newValue.includes('z-index'))) {
                 if (mut.target.style.display !== 'none') {
-                    cipObserverHelper.handleObserverAdd(mut.target);
+                    kpxcObserverHelper.handleObserverAdd(mut.target);
                 } else {
-                    cipObserverHelper.handleObserverRemove(mut.target);
+                    kpxcObserverHelper.handleObserverRemove(mut.target);
                 }
             }
         } else if (mut.type === 'childList') {
-            cipObserverHelper.handleObserverAdd((mut.addedNodes.length > 0) ? mut.addedNodes[0] : mut.target);
-            cipObserverHelper.handleObserverRemove((mut.removedNodes.length > 0) ? mut.removedNodes[0] : mut.target);
+            kpxcObserverHelper.handleObserverAdd((mut.addedNodes.length > 0) ? mut.addedNodes[0] : mut.target);
+            kpxcObserverHelper.handleObserverRemove((mut.removedNodes.length > 0) ? mut.removedNodes[0] : mut.target);
         }
     }
 });
@@ -678,20 +673,20 @@ observer.observe(document, {
     attributeFilter: ['style']
 });
 
-var cip = {};
-cip.settings = {};
-cip.u = null;
-cip.p = null;
-cip.url = null;
-cip.submitUrl = null;
-cip.credentials = [];
+var kpxc = {};
+kpxc.settings = {};
+kpxc.u = null;
+kpxc.p = null;
+kpxc.url = null;
+kpxc.submitUrl = null;
+kpxc.credentials = [];
 
 const initcb = function() {
     browser.runtime.sendMessage({
         action: 'load_settings',
     }).then((response) => {
-        cip.settings = response;
-        cip.initCredentialFields();
+        kpxc.settings = response;
+        kpxc.initCredentialFields();
     });
 };
 
@@ -701,14 +696,14 @@ if (document.readyState === 'complete' || (document.readyState !== 'loading' && 
     document.addEventListener('DOMContentLoaded', initcb);
 }
 
-cip.init = function() {
+kpxc.init = function() {
     initcb();
 };
 
 // Clears all from the content and background scripts, including autocomplete
-cip.clearAllFromPage = function() {
-    cipEvents.clearCredentials();
- 
+kpxc.clearAllFromPage = function() {
+    kpxcEvents.clearCredentials();
+
     browser.runtime.sendMessage({
         action: 'page_clear_logins'
     });
@@ -721,45 +716,45 @@ cip.clearAllFromPage = function() {
 };
 
 // Switch credentials if database is changed or closed
-cip.detectDatabaseChange = function(response) {
+kpxc.detectDatabaseChange = function(response) {
     if (document.visibilityState !== 'hidden') {
         if (response.new === '' && response.old !== '') {
-            cip.clearAllFromPage();
+            kpxc.clearAllFromPage();
         } else if (response.new !== '' && response.new !== response.old) {
             _called.retrieveCredentials = false;
             browser.runtime.sendMessage({
                 action: 'load_settings',
-            }).then((response) => {
-                cip.settings = response;
-                cip.initCredentialFields(true);
+            }).then((settings) => {
+                kpxc.settings = settings;
+                kpxc.initCredentialFields(true);
 
                 // If user has requested a manual fill through context menu the actual credential filling
                 // is handled here when the opened database has been regognized. It's not a pretty hack.
                 if (_called.manualFillRequested && _called.manualFillRequested !== 'none') {
-                    cip.fillInFromActiveElement(false, _called.manualFillRequested === 'pass');
+                    kpxc.fillInFromActiveElement(false, _called.manualFillRequested === 'pass');
                     _called.manualFillRequested = 'none';
                 }
             });
         }
     } else {
-        // Clera everything if document is hidden, for example when the screen is locked
-        cip.clearAllFromPage();
+        // Clear everything if document is hidden, for example when the screen is locked
+        kpxc.clearAllFromPage();
     }
 };
 
-cip.initCredentialFields = function(forceCall) {
+kpxc.initCredentialFields = function(forceCall) {
     if (_called.initCredentialFields && !forceCall) {
         return;
     }
     _called.initCredentialFields = true;
 
-    browser.runtime.sendMessage({ 'action': 'page_clear_logins', args: [_called.clearLogins] }).then(() => {
+    browser.runtime.sendMessage({ 'action': 'page_clear_logins', args: [ _called.clearLogins ] }).then(() => {
         _called.clearLogins = true;
 
         // Check site preferences
-        cip.initializeSitePreferences();
-        if (cip.settings.sitePreferences) {
-            for (const site of cip.settings.sitePreferences) {
+        kpxc.initializeSitePreferences();
+        if (kpxc.settings.sitePreferences) {
+            for (const site of kpxc.settings.sitePreferences) {
                 if (site.url === document.location.href || siteMatch(site.url, document.location.href)) {
                     if (site.ignore === IGNORE_FULL) {
                         return;
@@ -770,51 +765,51 @@ cip.initCredentialFields = function(forceCall) {
             }
         }
 
-        const inputs = cipFields.getAllFields();
+        const inputs = kpxcFields.getAllFields();
         if (inputs.length === 0) {
             return;
         }
 
-        cipFields.prepareVisibleFieldsWithID('select');
-        cip.initPasswordGenerator(inputs);
+        kpxcFields.prepareVisibleFieldsWithID('select');
+        kpxc.initPasswordGenerator(inputs);
 
-        if (!cipFields.useDefinedCredentialFields()) {
-            // get all combinations of username + password fields
-            cipFields.combinations = cipFields.getAllCombinations(inputs);
+        if (!kpxcFields.useDefinedCredentialFields()) {
+            // Get all combinations of username + password fields
+            kpxcFields.combinations = kpxcFields.getAllCombinations(inputs);
         }
-        cipFields.prepareCombinations(cipFields.combinations);
+        kpxcFields.prepareCombinations(kpxcFields.combinations);
 
-        if (cipFields.combinations.length === 0 && inputs.length === 0) {
+        if (kpxcFields.combinations.length === 0 && inputs.length === 0) {
             browser.runtime.sendMessage({
                 action: 'show_default_browseraction'
             });
             return;
         }
 
-        cip.url = document.location.origin;
-        cip.submitUrl = cip.getFormActionUrl(cipFields.combinations[0]);
+        kpxc.url = document.location.origin;
+        kpxc.submitUrl = kpxc.getFormActionUrl(kpxcFields.combinations[0]);
 
         // Get submitUrl for a single input
-        if (!cip.submitUrl && cipFields.combinations.length === 1 && inputs.length === 1) {
-            cip.submitUrl = cip.getFormActionUrlFromSingleInput(inputs[0]);
+        if (!kpxc.submitUrl && kpxcFields.combinations.length === 1 && inputs.length === 1) {
+            kpxc.submitUrl = kpxc.getFormActionUrlFromSingleInput(inputs[0]);
         } 
 
-        if (cip.settings.autoRetrieveCredentials && _called.retrieveCredentials === false && (cip.url && cip.submitUrl)) {
+        if (kpxc.settings.autoRetrieveCredentials && _called.retrieveCredentials === false && (kpxc.url && kpxc.submitUrl)) {
             _called.retrieveCredentials = true;
             browser.runtime.sendMessage({
                 action: 'retrieve_credentials',
-                args: [ cip.url, cip.submitUrl ]
-            }).then(cip.retrieveCredentialsCallback).catch((e) => {
+                args: [ kpxc.url, kpxc.submitUrl ]
+            }).then(kpxc.retrieveCredentialsCallback).catch((e) => {
                 console.log(e);
             });
         } else if (_singleInputEnabledForPage) {
-            cip.preparePageForMultipleCredentials(cip.credentials);
+            kpxc.preparePageForMultipleCredentials(kpxc.credentials);
         }
     });
 };
 
-cip.initPasswordGenerator = function(inputs) {
-    if (cip.settings.usePasswordGenerator) {
+kpxc.initPasswordGenerator = function(inputs) {
+    if (kpxc.settings.usePasswordGenerator) {
         kpxcPassword.init();
 
         for (let i = 0; i < inputs.length; i++) {
@@ -825,77 +820,75 @@ cip.initPasswordGenerator = function(inputs) {
     }
 };
 
-cip.receiveCredentialsIfNecessary = function() {
+kpxc.receiveCredentialsIfNecessary = function() {
     return new Promise((resolve, reject) => {
-        if (cip.credentials.length === 0 && _called.retrieveCredentials === false) {
+        if (kpxc.credentials.length === 0 && _called.retrieveCredentials === false) {
             browser.runtime.sendMessage({
                 action: 'retrieve_credentials',
-                args: [ cip.url, cip.submitUrl, false, true ] // Sets triggerUnlock to true
+                args: [ kpxc.url, kpxc.submitUrl, false, true ] // Sets triggerUnlock to true
             }).then((credentials) => {
-                // If the database was locked, this is scope never met. In these cases the response is met at cip.detectDatabaseChange
+                // If the database was locked, this is scope never met. In these cases the response is met at kpxc.detectDatabaseChange
                 _called.manualFillRequested = 'none';
-                cip.retrieveCredentialsCallback(credentials, false);
+                kpxc.retrieveCredentialsCallback(credentials, false);
                 resolve(credentials);
             });
         } else {
-            resolve(cip.credentials);
+            resolve(kpxc.credentials);
         }
     });
 };
 
-cip.retrieveCredentialsCallback = function(credentials, dontAutoFillIn) {
-    if (cipFields.combinations.length > 0) {
-        cip.u = _f(cipFields.combinations[0].username);
-        cip.p = _f(cipFields.combinations[0].password);
+kpxc.retrieveCredentialsCallback = function(credentials, dontAutoFillIn) {
+    if (kpxcFields.combinations.length > 0) {
+        kpxc.u = _f(kpxcFields.combinations[0].username);
+        kpxc.p = _f(kpxcFields.combinations[0].password);
     }
 
     if (credentials && credentials.length > 0) {
-        cip.credentials = credentials;
-        cip.prepareFieldsForCredentials(!Boolean(dontAutoFillIn));
+        kpxc.credentials = credentials;
+        kpxc.prepareFieldsForCredentials(!Boolean(dontAutoFillIn));
         _called.retrieveCredentials = true;
     }
 };
 
-cip.prepareFieldsForCredentials = function(autoFillInForSingle) {
+kpxc.prepareFieldsForCredentials = function(autoFillInForSingle) {
     // only one login for this site
-    if (autoFillInForSingle && cip.settings.autoFillSingleEntry && cip.credentials.length === 1) {
+    if (autoFillInForSingle && kpxc.settings.autoFillSingleEntry && kpxc.credentials.length === 1) {
         let combination = null;
-        if (!cip.p && !cip.u && cipFields.combinations.length > 0) {
-            cip.u = _f(cipFields.combinations[0].username);
-            cip.p = _f(cipFields.combinations[0].password);
-            combination = cipFields.combinations[0];
+        if (!kpxc.p && !kpxc.u && kpxcFields.combinations.length > 0) {
+            kpxc.u = _f(kpxcFields.combinations[0].username);
+            kpxc.p = _f(kpxcFields.combinations[0].password);
+            combination = kpxcFields.combinations[0];
         }
-        if (cip.u) {
-            cip.setValueWithChange(cip.u, cip.credentials[0].login);
-            combination = cipFields.getCombination('username', cip.u);
+        if (kpxc.u) {
+            kpxc.setValueWithChange(kpxc.u, kpxc.credentials[0].login);
+            combination = kpxcFields.getCombination('username', kpxc.u);
         }
-        if (cip.p) {
-            cip.setValueWithChange(cip.p, cip.credentials[0].password);
-            combination = cipFields.getCombination('password', cip.p);
+        if (kpxc.p) {
+            kpxc.setValueWithChange(kpxc.p, kpxc.credentials[0].password);
+            combination = kpxcFields.getCombination('password', kpxc.p);
         }
 
         if (combination) {
             let list = [];
-            if (cip.fillInStringFields(combination.fields, cip.credentials[0].stringFields, list)) {
-                cipForm.destroy(false, {'password': list.list[0], 'username': list.list[1]});
+            if (kpxc.fillInStringFields(combination.fields, kpxc.credentials[0].stringFields, list)) {
+                kpxcForm.destroy(false, {'password': list.list[0], 'username': list.list[1]});
             }
         }
 
-        // generate popup-list of usernames + descriptions
+        // Generate popup-list of usernames + descriptions
         browser.runtime.sendMessage({
             action: 'popup_login',
-            args: [[cip.credentials[0].login + ' (' + cip.credentials[0].name + ')']]
+            args: [ [ kpxc.credentials[0].login + ' (' + kpxc.credentials[0].name + ')' ]]
         });
-    }
-    //multiple logins for this site
-    else if (cip.credentials.length > 1 || (cip.credentials.length > 0 && (!cip.settings.autoFillSingleEntry || !autoFillInForSingle))) {
-        cip.preparePageForMultipleCredentials(cip.credentials);
+    } else if (kpxc.credentials.length > 1 || (kpxc.credentials.length > 0 && (!kpxc.settings.autoFillSingleEntry || !autoFillInForSingle))) {
+        kpxc.preparePageForMultipleCredentials(kpxc.credentials);
     }
 };
 
-cip.preparePageForMultipleCredentials = function(credentials) {
+kpxc.preparePageForMultipleCredentials = function(credentials) {
     // add usernames + descriptions to autocomplete-list and popup-list
-    let usernames = [];
+    const usernames = [];
     kpxcAutocomplete.elements = [];
     let visibleLogin;
     for (let i = 0; i < credentials.length; i++) {
@@ -909,15 +902,15 @@ cip.preparePageForMultipleCredentials = function(credentials) {
         kpxcAutocomplete.elements.push(item);
     }
 
-    // generate popup-list of usernames + descriptions
+    // Generate popup-list of usernames + descriptions
     browser.runtime.sendMessage({
         action: 'popup_login',
-        args: [usernames]
+        args: [ usernames ]
     });
 
-    // initialize autocomplete for username fields
-    if (cip.settings.autoCompleteUsernames) {
-        for (const i of cipFields.combinations) {
+    // Initialize autocomplete for username fields
+    if (kpxc.settings.autoCompleteUsernames) {
+        for (const i of kpxcFields.combinations) {
             // Both username and password fields are visible
             if (_detectedFields >= 2) {
                 if (_f(i.username)) {
@@ -935,7 +928,7 @@ cip.preparePageForMultipleCredentials = function(credentials) {
     }
 };
 
-cip.getFormActionUrl = function(combination) {
+kpxc.getFormActionUrl = function(combination) {
     if (!combination) {
         return null;
     }
@@ -959,7 +952,7 @@ cip.getFormActionUrl = function(combination) {
     return action;
 };
 
-cip.getFormActionUrlFromSingleInput = function(field) {
+kpxc.getFormActionUrlFromSingleInput = function(field) {
     if (!field) {
         return null;
     }
@@ -973,64 +966,62 @@ cip.getFormActionUrlFromSingleInput = function(field) {
     return action;
 };
 
-cip.fillInCredentials = function(combination, onlyPassword, suppressWarnings) {
-    const action = cip.getFormActionUrl(combination);
+kpxc.fillInCredentials = function(combination, onlyPassword, suppressWarnings) {
+    const action = kpxc.getFormActionUrl(combination);
     const u = _f(combination.username);
     const p = _f(combination.password);
 
     if (combination.isNew) {
-        // initialize form-submit for remembering credentials
+        // Initialize form-submit for remembering credentials
         const fieldId = combination.password || combination.username;
         const field = _f(fieldId);
         if (field) {
             const form2 = field.closest('form');
             if (form2 && form2.length > 0) {
-                cipForm.init(form2, combination);
+                kpxcForm.init(form2, combination);
             }
         }
     }
 
     if (u) {
-        cip.u = u;
+        kpxc.u = u;
     }
     if (p) {
-        cip.p = p;
+        kpxc.p = p;
     }
 
-    if (cip.url === document.location.origin && cip.submitUrl === action && cip.credentials.length > 0) {
-        cip.fillIn(combination, onlyPassword, suppressWarnings);
-    }
-    else {
-        cip.url = document.location.origin;
-        cip.submitUrl = action;
+    if (kpxc.url === document.location.origin && kpxc.submitUrl === action && kpxc.credentials.length > 0) {
+        kpxc.fillIn(combination, onlyPassword, suppressWarnings);
+    } else {
+        kpxc.url = document.location.origin;
+        kpxc.submitUrl = action;
 
         browser.runtime.sendMessage({
             action: 'retrieve_credentials',
-            args: [ cip.url, cip.submitUrl, false, true ]
+            args: [ kpxc.url, kpxc.submitUrl, false, true ]
         }).then((credentials) => {
-            cip.retrieveCredentialsCallback(credentials, true);
-            cip.fillIn(combination, onlyPassword, suppressWarnings);
+            kpxc.retrieveCredentialsCallback(credentials, true);
+            kpxc.fillIn(combination, onlyPassword, suppressWarnings);
         });
     }
 };
 
-cip.fillInFromActiveElement = function(suppressWarnings, passOnly = false) {
+kpxc.fillInFromActiveElement = function(suppressWarnings, passOnly = false) {
     const el = document.activeElement;
     if (el.tagName.toLowerCase() !== 'input') {
-        if (cipFields.combinations.length > 0) {
-            cip.fillInCredentials(cipFields.combinations[0], false, suppressWarnings);
+        if (kpxcFields.combinations.length > 0) {
+            kpxc.fillInCredentials(kpxcFields.combinations[0], false, suppressWarnings);
         }
         return;
     }
 
-    cipFields.setUniqueId(el);
-    const fieldId = cipFields.prepareId(el.getAttribute('data-kpxc-id'));
+    kpxcFields.setUniqueId(el);
+    const fieldId = kpxcFields.prepareId(el.getAttribute('data-kpxc-id'));
     let combination = null;
     if (el.getAttribute('type') === 'password') {
-        combination = cipFields.getCombination('password', fieldId);
-    }
-    else {
-        combination = cipFields.getCombination('username', fieldId);
+        combination = kpxcFields.getCombination('password', fieldId);
+    } else {
+        combination = kpxcFields.getCombination('username', fieldId);
     }
 
     if (passOnly) {
@@ -1038,7 +1029,7 @@ cip.fillInFromActiveElement = function(suppressWarnings, passOnly = false) {
             const message = tr('fieldsNoPasswordField');
             browser.runtime.sendMessage({
                 action: 'show_notification',
-                args: [message]
+                args: [ message ]
             });
             return;
         }
@@ -1046,52 +1037,51 @@ cip.fillInFromActiveElement = function(suppressWarnings, passOnly = false) {
 
     delete combination.loginId;
 
-    cip.fillInCredentials(combination, passOnly, suppressWarnings);
+    kpxc.fillInCredentials(combination, passOnly, suppressWarnings);
 };
 
-cip.fillInFromActiveElementTOTPOnly = function(suppressWarnings) {
+kpxc.fillInFromActiveElementTOTPOnly = function(suppressWarnings) {
     const el = document.activeElement;
-    cipFields.setUniqueId(el);
-    const fieldId = cipFields.prepareId(el.getAttribute('data-kpxc-id'));
+    kpxcFields.setUniqueId(el);
+    const fieldId = kpxcFields.prepareId(el.getAttribute('data-kpxc-id'));
 
     browser.runtime.sendMessage({
         action: 'page_get_login_id'
     }).then((pos) => {
-        if (pos >= 0 && cip.credentials[pos]) {
+        if (pos >= 0 && kpxc.credentials[pos]) {
             // Check the value from stringFields (to be removed)
             const currentField = _fs(fieldId);
-            if (cip.credentials[pos].stringFields && cip.credentials[pos].stringFields.length > 0) {
-                const stringFields = cip.credentials[pos].stringFields;
+            if (kpxc.credentials[pos].stringFields && kpxc.credentials[pos].stringFields.length > 0) {
+                const stringFields = kpxc.credentials[pos].stringFields;
                 for (const s of stringFields) {
-                    const val = s["KPH: {TOTP}"];
+                    const val = s['KPH: {TOTP}'];
                     if (val) {
-                        cip.setValue(currentField, val);
+                        kpxc.setValue(currentField, val);
                     }
                 }
-            } else if (cip.credentials[pos].totp && cip.credentials[pos].totp.length > 0) {
-                cip.setValue(currentField, cip.credentials[pos].totp);
+            } else if (kpxc.credentials[pos].totp && kpxc.credentials[pos].totp.length > 0) {
+                kpxc.setValue(currentField, kpxc.credentials[pos].totp);
             }
         }
     });
 };
 
-cip.setValue = function(field, value) {
+kpxc.setValue = function(field, value) {
     if (field.matches('select')) {
         value = value.toLowerCase().trim();
         const options = field.querySelectorAll('option');
         for (const o of options) {
             if (o.test().toLowerCase().trim() === value) {
-                cip.setValueWithChange(field, o.value);
+                kpxc.setValueWithChange(field, o.value);
                 return false;
             }
         }
-    }
-    else {
-        cip.setValueWithChange(field, value);
+    } else {
+        kpxc.setValueWithChange(field, value);
     }
 };
 
-cip.fillInStringFields = function(fields, stringFields, filledInFields) {
+kpxc.fillInStringFields = function(fields, stringFields, filledInFields) {
     let filledIn = false;
 
     filledInFields.list = [];
@@ -1100,7 +1090,7 @@ cip.fillInStringFields = function(fields, stringFields, filledInFields) {
             const currentField = _fs(fields[i]);
             const stringFieldValue = Object.values(stringFields[i]);
             if (currentField && stringFieldValue[0]) {
-                cip.setValue(currentField, stringFieldValue[0]);
+                kpxc.setValue(currentField, stringFieldValue[0]);
                 filledInFields.list.push(fields[i]);
                 filledIn = true;
             }
@@ -1110,26 +1100,26 @@ cip.fillInStringFields = function(fields, stringFields, filledInFields) {
     return filledIn;
 };
 
-cip.setValueWithChange = function(field, value) {
-    if (cip.settings.respectMaxLength === true) {
-        const attribute_maxlength = field.getAttribute('maxlength');
-        if (attribute_maxlength && !isNaN(attribute_maxlength) && attribute_maxlength > 0) {
-            value = value.substr(0, attribute_maxlength);
+kpxc.setValueWithChange = function(field, value) {
+    if (kpxc.settings.respectMaxLength === true) {
+        const attributeMaxlength = field.getAttribute('maxlength');
+        if (attributeMaxlength && !isNaN(attributeMaxlength) && attributeMaxlength > 0) {
+            value = value.substr(0, attributeMaxlength);
         }
     }
 
     field.value = value;
-    field.dispatchEvent(new Event('input', {'bubbles': true}));
-    field.dispatchEvent(new Event('change', {'bubbles': true}));
+    field.dispatchEvent(new Event('input', { 'bubbles': true }));
+    field.dispatchEvent(new Event('change', { 'bubbles': true }));
 };
 
-cip.fillIn = function(combination, onlyPassword, suppressWarnings) {
-    // no credentials available
-    if (cip.credentials.length === 0 && !suppressWarnings) {
+kpxc.fillIn = function(combination, onlyPassword, suppressWarnings) {
+    // No credentials available
+    if (kpxc.credentials.length === 0 && !suppressWarnings) {
         const message = tr('credentialsNoLoginsFound');
         browser.runtime.sendMessage({
             action: 'show_notification',
-            args: [message]
+            args: [ message ]
         });
         return;
     }
@@ -1137,25 +1127,25 @@ cip.fillIn = function(combination, onlyPassword, suppressWarnings) {
     const uField = _f(combination.username);
     const pField = _f(combination.password);
 
-    // exactly one pair of credentials available
-    if (cip.credentials.length === 1) {
+    // Exactly one pair of credentials available
+    if (kpxc.credentials.length === 1) {
         let filledIn = false;
         if (uField && (!onlyPassword || _singleInputEnabledForPage)) {
-            cip.setValueWithChange(uField, cip.credentials[0].login);
+            kpxc.setValueWithChange(uField, kpxc.credentials[0].login);
             _loginId = 0;
             filledIn = true;
         }
         if (pField) {
             pField.setAttribute('type', 'password');
-            cip.setValueWithChange(pField, cip.credentials[0].password);
+            kpxc.setValueWithChange(pField, kpxc.credentials[0].password);
             pField.setAttribute('unchanged', true);
             _loginId = 0;
             filledIn = true;
         }
 
         let list = [];
-        if (cip.fillInStringFields(combination.fields, cip.credentials[0].stringFields, list)) {
-            cipForm.destroy(false, {'password': list.list[0], 'username': list.list[1]});
+        if (kpxc.fillInStringFields(combination.fields, kpxc.credentials[0].stringFields, list)) {
+            kpxcForm.destroy(false, { 'password': list.list[0], 'username': list.list[1] });
             filledIn = true;
         }
 
@@ -1164,30 +1154,29 @@ cip.fillIn = function(combination, onlyPassword, suppressWarnings) {
                 const message = tr('fieldsFill');
                 browser.runtime.sendMessage({
                     action: 'show_notification',
-                    args: [message]
+                    args: [ message ]
                 });
             }
         }
-    }
-    // specific login id given
-    else if (combination.loginId !== undefined && cip.credentials[combination.loginId]) {
+    } else if (combination.loginId !== undefined && kpxc.credentials[combination.loginId]) {
+        // Specific login ID given
         let filledIn = false;
         if (uField) {
-            cip.setValueWithChange(uField, cip.credentials[combination.loginId].login);
+            kpxc.setValueWithChange(uField, kpxc.credentials[combination.loginId].login);
             _loginId = combination.loginId;
             filledIn = true;
         }
 
         if (pField) {
-            cip.setValueWithChange(pField, cip.credentials[combination.loginId].password);
+            kpxc.setValueWithChange(pField, kpxc.credentials[combination.loginId].password);
             pField.setAttribute('unchanged', true);
             _loginId = combination.loginId;
             filledIn = true;
         }
 
         let list = [];
-        if (cip.fillInStringFields(combination.fields, cip.credentials[combination.loginId].stringFields, list)) {
-            cipForm.destroy(false, {'password': list.list[0], 'username': list.list[1]});
+        if (kpxc.fillInStringFields(combination.fields, kpxc.credentials[combination.loginId].stringFields, list)) {
+            kpxcForm.destroy(false, { 'password': list.list[0], 'username': list.list[1] });
             filledIn = true;
         }
 
@@ -1196,14 +1185,12 @@ cip.fillIn = function(combination, onlyPassword, suppressWarnings) {
                 const message = tr('fieldsFill');
                 browser.runtime.sendMessage({
                     action: 'show_notification',
-                    args: [message]
+                    args: [ message ]
                 });
             }
         }
-    }
-    // multiple credentials available
-    else {
-        // check if only one password for given username exists
+    } else { // Multiple credentials available
+        // Check if only one password for given username exists
         let countPasswords = 0;
 
         if (uField) {
@@ -1212,8 +1199,8 @@ cip.fillIn = function(combination, onlyPassword, suppressWarnings) {
             let valStringFields = [];
             const valQueryUsername = uField.value.toLowerCase();
 
-            // find passwords to given username (even those with empty username)
-            for (const c of cip.credentials) {
+            // Find passwords to given username (even those with empty username)
+            for (const c of kpxc.credentials) {
                 if (c.login.toLowerCase() === valQueryUsername) {
                     countPasswords += 1;
                     valPassword = c.password;
@@ -1222,47 +1209,45 @@ cip.fillIn = function(combination, onlyPassword, suppressWarnings) {
                 }
             }
 
-            // for the correct notification message: 0 = no logins, X > 1 = too many logins
+            // For the correct notification message: 0 = no logins, X > 1 = too many logins
             if (countPasswords === 0) {
-                countPasswords = cip.credentials.length;
+                countPasswords = kpxc.credentials.length;
             }
 
-            // only one mapping username found
+            // Only one mapping username found
             if (countPasswords === 1) {
                 if (!onlyPassword) {
-                    cip.setValueWithChange(uField, valUsername);
+                    kpxc.setValueWithChange(uField, valUsername);
                 }
 
                 if (pField) {
-                    cip.setValueWithChange(pField, valPassword);
+                    kpxc.setValueWithChange(pField, valPassword);
                     pField.setAttribute('unchanged', true);
                 }
 
                 let list = [];
-                if (cip.fillInStringFields(combination.fields, valStringFields, list)) {
-                    cipForm.destroy(false, {'password': list.list[0], 'username': list.list[1]});
+                if (kpxc.fillInStringFields(combination.fields, valStringFields, list)) {
+                    kpxcForm.destroy(false, { 'password': list.list[0], 'username': list.list[1] });
                 }
             }
 
-            // user has to select correct credentials by himself
+            // User has to select correct credentials by himself
             if (countPasswords > 1) {
                 if (!suppressWarnings) {
                     const target = onlyPassword ? pField : uField;
                     kpxcAutocomplete.create(target, true);
                     target.focus();
                 }
-            }
-            else if (countPasswords < 1) {
+            } else if (countPasswords < 1) {
                 if (!suppressWarnings) {
                     const message = tr('credentialsNoUsernameFound');
                     browser.runtime.sendMessage({
                         action: 'show_notification',
-                        args: [message]
+                        args: [ message ]
                     });
                 }
             }
-        }
-        else {
+        } else {
             if (!suppressWarnings) {
                 const target = onlyPassword ? pField : uField;
                 kpxcAutocomplete.create(target);
@@ -1272,20 +1257,19 @@ cip.fillIn = function(combination, onlyPassword, suppressWarnings) {
     }
 };
 
-cip.contextMenuRememberCredentials = function() {
+kpxc.contextMenuRememberCredentials = function() {
     const el = document.activeElement;
     if (el.tagName.toLowerCase() !== 'input') {
         return;
     }
 
-    cipFields.setUniqueId(el);
-    const fieldId = cipFields.prepareId(el.getAttribute('data-kpxc-id'));
+    kpxcFields.setUniqueId(el);
+    const fieldId = kpxcFields.prepareId(el.getAttribute('data-kpxc-id'));
     let combination = null;
     if (el.getAttribute('type') === 'password') {
-        combination = cipFields.getCombination('password', fieldId);
-    }
-    else {
-        combination = cipFields.getCombination('username', fieldId);
+        combination = kpxcFields.getCombination('password', fieldId);
+    } else {
+        combination = kpxcFields.getCombination('username', fieldId);
     }
 
     let usernameValue = '';
@@ -1301,17 +1285,17 @@ cip.contextMenuRememberCredentials = function() {
         passwordValue = passwordField.value;
     }
 
-    if (!cip.rememberCredentials(usernameValue, passwordValue)) {
+    if (!kpxc.rememberCredentials(usernameValue, passwordValue)) {
         const message = tr('rememberNothingChanged');
         browser.runtime.sendMessage({
             action: 'show_notification',
-            args: [message]
+            args: [ message ]
         });
     }
 };
 
-cip.rememberCredentials = function(usernameValue, passwordValue) {
-    // no password given or field cleaned by a site-running script
+kpxc.rememberCredentials = function(usernameValue, passwordValue) {
+    // No password given or field cleaned by a site-running script
     // --> no password to save
     if (passwordValue === '') {
         return false;
@@ -1320,7 +1304,7 @@ cip.rememberCredentials = function(usernameValue, passwordValue) {
     let usernameExists = false;
     let nothingChanged = false;
 
-    for (const c of cip.credentials) {
+    for (const c of kpxc.credentials) {
         if (c.login === usernameValue && c.password === passwordValue) {
             nothingChanged = true;
             break;
@@ -1333,15 +1317,15 @@ cip.rememberCredentials = function(usernameValue, passwordValue) {
 
     if (!nothingChanged) {
         if (!usernameExists) {
-            for (const c of cip.credentials) {
+            for (const c of kpxc.credentials) {
                 if (c.login === usernameValue) {
                     usernameExists = true;
                     break;
                 }
             }
         }
-        let credentialsList = [];
-        for (const c of cip.credentials) {
+        const credentialsList = [];
+        for (const c of kpxc.credentials) {
             credentialsList.push({
                 login: c.login,
                 name: c.name,
@@ -1351,7 +1335,7 @@ cip.rememberCredentials = function(usernameValue, passwordValue) {
 
         let url = this.action;
         if (!url) {
-            url = cip.getDocumentLocation();
+            url = kpxc.getDocumentLocation();
             if (url.indexOf('?') > 0) {
                 url = url.substring(0, url.indexOf('?'));
                 if (url.length < document.location.origin.length) {
@@ -1362,7 +1346,7 @@ cip.rememberCredentials = function(usernameValue, passwordValue) {
 
         browser.runtime.sendMessage({
             action: 'set_remember_credentials',
-            args: [usernameValue, passwordValue, url, usernameExists, credentialsList]
+            args: [ usernameValue, passwordValue, url, usernameExists, credentialsList ]
         });
 
         return true;
@@ -1371,13 +1355,13 @@ cip.rememberCredentials = function(usernameValue, passwordValue) {
     return false;
 };
 
-cip.ignoreSite = function(sites) {
+kpxc.ignoreSite = function(sites) {
     if (!sites || sites.length === 0) {
         return;
     }
 
     let site = sites[0];
-    cip.initializeSitePreferences();
+    kpxc.initializeSitePreferences();
 
     if (slashNeededForUrl(site)) {
         site += '/';
@@ -1385,7 +1369,7 @@ cip.ignoreSite = function(sites) {
 
     // Check if the site already exists
     let siteExists = false;
-    for (const existingSite of cip.settings['sitePreferences']) {
+    for (const existingSite of kpxc.settings['sitePreferences']) {
         if (existingSite.url === site) {
             existingSite.ignore = IGNORE_NORMAL;
             siteExists = true;
@@ -1393,7 +1377,7 @@ cip.ignoreSite = function(sites) {
     }
 
     if (!siteExists) {
-        cip.settings['sitePreferences'].push({
+        kpxc.settings['sitePreferences'].push({
             url: site,
             ignore: IGNORE_NORMAL,
             usernameOnly: false
@@ -1402,35 +1386,35 @@ cip.ignoreSite = function(sites) {
 
     browser.runtime.sendMessage({
         action: 'save_settings',
-        args: [cip.settings]
+        args: [ kpxc.settings ]
     });
 };
 
 // Delete previously created Object if it exists. It will be replaced by an Array
-cip.initializeSitePreferences = function() {
-    if (cip.settings['sitePreferences'] !== undefined && cip.settings['sitePreferences'].constructor === Object) {
-        delete cip.settings['sitePreferences'];
+kpxc.initializeSitePreferences = function() {
+    if (kpxc.settings['sitePreferences'] !== undefined && kpxc.settings['sitePreferences'].constructor === Object) {
+        delete kpxc.settings['sitePreferences'];
     }
 
-    if (!cip.settings['sitePreferences']) {
-        cip.settings['sitePreferences'] = [];
+    if (!kpxc.settings['sitePreferences']) {
+        kpxc.settings['sitePreferences'] = [];
     }
 };
 
-cip.getDocumentLocation = function() {
-    return cip.settings.saveDomainOnly ? document.location.origin : document.location.href;
+kpxc.getDocumentLocation = function() {
+    return kpxc.settings.saveDomainOnly ? document.location.origin : document.location.href;
 };
 
 
-var cipEvents = {};
+var kpxcEvents = {};
 
-cipEvents.clearCredentials = function() {
-    cip.credentials = [];
+kpxcEvents.clearCredentials = function() {
+    kpxc.credentials = [];
     kpxcAutocomplete.elements = [];
     _called.retrieveCredentials = false;
 
-    if (cip.settings.autoCompleteUsernames) {
-        for (const c of cipFields.combinations) {
+    if (kpxc.settings.autoCompleteUsernames) {
+        for (const c of kpxcFields.combinations) {
             const uField = _f(c.username);
             if (uField) {
                 if (uField.classList.contains('ui-autocomplete-input')) {
@@ -1441,17 +1425,17 @@ cipEvents.clearCredentials = function() {
     }
 };
 
-cipEvents.triggerActivatedTab = function() {
-    // doesn't run a second time because of _called.initCredentialFields set to true
-    cip.init();
+kpxcEvents.triggerActivatedTab = function() {
+    // Doesn't run a second time because of _called.initCredentialFields set to true
+    kpxc.init();
 
     // initCredentialFields calls also "retrieve_credentials", to prevent it
     // check of init() was already called
-    if (_called.initCredentialFields && (cip.url && cip.submitUrl) && cip.settings.autoRetrieveCredentials) {
+    if (_called.initCredentialFields && (kpxc.url && kpxc.submitUrl) && kpxc.settings.autoRetrieveCredentials) {
         browser.runtime.sendMessage({
             action: 'retrieve_credentials',
-            args: [ cip.url, cip.submitUrl ]
-        }).then(cip.retrieveCredentialsCallback).catch((e) => {
+            args: [ kpxc.url, kpxc.submitUrl ]
+        }).then(kpxc.retrieveCredentialsCallback).catch((e) => {
             console.log(e);
         });
     }

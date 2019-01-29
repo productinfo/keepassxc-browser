@@ -59,7 +59,6 @@
                 "css/autocomplete.css",
                 "css/button.css",
                 "css/define.css",
-                "css/keepassxc-browser.css",
                 "css/pwgen.css"
             ],
             "run_at": "document_idle",

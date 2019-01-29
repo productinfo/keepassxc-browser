@@ -23,8 +23,8 @@ kpxcDefine.init = function() {
     document.body.append(backdrop);
     document.body.append(chooser);
 
-    cipFields.getAllFields();
-    cipFields.prepareVisibleFieldsWithID('select');
+    kpxcFields.getAllFields();
+    kpxcFields.prepareVisibleFieldsWithID('select');
 
     kpxcDefine.initDescription();
     kpxcDefine.prepareStep1();
@@ -82,26 +82,26 @@ kpxcDefine.initDescription = function() {
     buttonConfirm.style.marginRight = '15px';
     buttonConfirm.style.display = 'none';
     buttonConfirm.onclick = function() {
-        if (!cip.settings['defined-custom-fields']) {
-            cip.settings['defined-custom-fields'] = {};
+        if (!kpxc.settings['defined-custom-fields']) {
+            kpxc.settings['defined-custom-fields'] = {};
         }
 
         if (kpxcDefine.selection.username) {
-            kpxcDefine.selection.username = cipFields.prepareId(kpxcDefine.selection.username);
+            kpxcDefine.selection.username = kpxcFields.prepareId(kpxcDefine.selection.username);
         }
 
         if (kpxcDefine.selection.password) {
-            kpxcDefine.selection.password = cipFields.prepareId(kpxcDefine.selection.password);
+            kpxcDefine.selection.password = kpxcFields.prepareId(kpxcDefine.selection.password);
         }
 
         const fieldIds = [];
         const fieldKeys = Object.keys(kpxcDefine.selection.fields);
         for (const i of fieldKeys) {
-            fieldIds.push(cipFields.prepareId(i));
+            fieldIds.push(kpxcFields.prepareId(i));
         }
 
-        const location = cip.getDocumentLocation();
-        cip.settings['defined-custom-fields'][location] = {
+        const location = kpxc.getDocumentLocation();
+        kpxc.settings['defined-custom-fields'][location] = {
             username: kpxcDefine.selection.username,
             password: kpxcDefine.selection.password,
             fields: fieldIds
@@ -109,7 +109,7 @@ kpxcDefine.initDescription = function() {
 
         browser.runtime.sendMessage({
             action: 'save_settings',
-            args: [ cip.settings ]
+            args: [ kpxc.settings ]
         });
 
         $('#kpxcDefine-btn-dismiss').click();
@@ -120,18 +120,18 @@ kpxcDefine.initDescription = function() {
     description.append(buttonAgain);
     description.append(buttonDismiss);
 
-    const location = cip.getDocumentLocation();
-    if (cip.settings['defined-custom-fields'] && cip.settings['defined-custom-fields'][location]) {
+    const location = kpxc.getDocumentLocation();
+    if (kpxc.settings['defined-custom-fields'] && kpxc.settings['defined-custom-fields'][location]) {
         const div = kpxcUI.createElement('div', '', {});
         const defineDiscard = kpxcUI.createElement('p', '', {}, tr('defineAlreadySelected'));
         const buttonDiscard = kpxcUI.createElement('button', 'kpxc-button kpxc-red-button', { 'id': 'kpxcDefine-btn-discard' }, tr('defineDiscard'));
         buttonDiscard.style.marginTop = '5px';
         buttonDiscard.onclick = function() {
-            delete cip.settings['defined-custom-fields'][location];
+            delete kpxc.settings['defined-custom-fields'][location];
 
             browser.runtime.sendMessage({
                 action: 'save_settings',
-                args: [ cip.settings ]
+                args: [ kpxc.settings ]
             });
 
             browser.runtime.sendMessage({
@@ -185,7 +185,7 @@ kpxcDefine.markAllUsernameFields = function(chooser) {
         kpxcDefine.prepareStep2();
         kpxcDefine.markAllPasswordFields('#kpxcDefine-fields');
     };
-    kpxcDefine.markFields(chooser, cipFields.inputQueryPattern);
+    kpxcDefine.markFields(chooser, kpxcFields.inputQueryPattern);
 };
 
 kpxcDefine.markAllPasswordFields = function(chooser) {
@@ -212,7 +212,7 @@ kpxcDefine.markAllStringFields = function(chooser) {
         field.textContent = tr('defineStringField') + String(count);
         field.onclick = null;
     };
-    kpxcDefine.markFields(chooser, cipFields.inputQueryPattern + ', select');
+    kpxcDefine.markFields(chooser, kpxcFields.inputQueryPattern + ', select');
 };
 
 kpxcDefine.markFields = function(chooser, pattern) {
@@ -222,7 +222,7 @@ kpxcDefine.markFields = function(chooser, pattern) {
             return true;
         }
 
-        if (cipFields.isVisible(i)) {
+        if (kpxcFields.isVisible(i)) {
             const field = kpxcUI.createElement('div', 'kpxcDefine-fixed-field', {'data-kpxc-id': i.getAttribute('data-kpxc-id')});
             const rect = i.getBoundingClientRect();
             field.style.top = rect.top + 'px';

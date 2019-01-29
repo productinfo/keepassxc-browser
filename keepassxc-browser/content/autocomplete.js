@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 
 var kpxcAutocomplete = {};
 kpxcAutocomplete.elements = [];
@@ -106,7 +106,7 @@ kpxcAutocomplete.create = function(input, showListInstantly = false) {
         return list.getElementsByTagName('div');
     };
 
-    /*
+    /**
      * Keyboard shortcuts for autocomplete menu:
      * - ArrowDown shows the list or selects item below, or the first item (last is active)
      * - ArrowUp selects item above, or the last item (first is active)
@@ -149,11 +149,11 @@ kpxcAutocomplete.create = function(input, showListInstantly = false) {
 
     function fillPassword(value, index) {
         const fieldId = input.getAttribute('data-kpxc-id');
-        cipFields.prepareId(fieldId);
-        const combination = cipFields.getCombination('username', fieldId);
+        kpxcFields.prepareId(fieldId);
+        const combination = kpxcFields.getCombination('username', fieldId);
         combination.loginId = index;
 
-        cip.fillInCredentials(combination, false, false);
+        kpxc.fillInCredentials(combination, false, false);
         input.setAttribute('fetched', true);
     };
 

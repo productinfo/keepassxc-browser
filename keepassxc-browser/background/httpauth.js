@@ -20,7 +20,7 @@ httpAuth.init = function() {
         browser.webRequest.onErrorOccurred.removeListener(httpAuth.requestCompleted);
     }
 
-    // only intercept http auth requests if the option is turned on.
+    // Only intercept http auth requests if the option is turned on.
     if (page.settings.autoFillAndSend) {
         const opts = { urls: ['<all_urls>'] };
 
@@ -31,7 +31,7 @@ httpAuth.init = function() {
 };
 
 httpAuth.requestCompleted = function(details) {
-    let index = httpAuth.requests.indexOf(details.requestId);
+    const index = httpAuth.requests.indexOf(details.requestId);
     if (index >= 0) {
         httpAuth.requests.splice(index, 1);
     }
@@ -57,7 +57,7 @@ httpAuth.retrieveCredentials = function(tabId, url, submitUrl, forceCallback) {
 
 httpAuth.processPendingCallbacks = async function(details, resolve, reject) {
     if (httpAuth.requests.indexOf(details.requestId) >= 0 || !page.tabs[details.tabId]) {
-        reject({cancel: false});
+        reject({ cancel: false });
         return;
     }
 
@@ -74,8 +74,8 @@ httpAuth.processPendingCallbacks = async function(details, resolve, reject) {
 };
 
 httpAuth.loginOrShowCredentials = function(logins, details, resolve, reject) {
-    // at least one login found --> use first to login
-    if (logins.length > 0  && page.settings.autoFillAndSend) {
+    // At least one login found --> use first to login
+    if (logins.length > 0 && page.settings.autoFillAndSend) {
         if (logins.length === 1) {
             resolve({
                 authCredentials: {
@@ -89,9 +89,8 @@ httpAuth.loginOrShowCredentials = function(logins, details, resolve, reject) {
             }
             kpxcEvent.onHTTPAuthPopup(null, { 'id': details.tabId }, { 'logins': logins, 'url': details.searchUrl, 'resolve': resolve });
         }
-    }
-    // no logins found
-    else {
-        reject({cancel: false});
+    } else {
+        // No logins found
+        reject({ cancel: false });
     }
 };
