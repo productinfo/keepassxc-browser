@@ -133,7 +133,6 @@ keepass.addCredentials = function(callback, tab, username, password, url) {
 };
 
 keepass.updateCredentials = function(callback, tab, entryId, username, password, url) {
-    page.debug('keepass.updateCredentials(callback, {1}, {2}, {3}, [password], {4})', tab.id, entryId, username, url);
     if (tab && page.tabs[tab.id]) {
         page.tabs[tab.id].errorMessage = null;
     }
@@ -193,8 +192,6 @@ keepass.updateCredentials = function(callback, tab, entryId, username, password,
 };
 
 keepass.retrieveCredentials = function(callback, tab, url, submiturl, forceCallback, triggerUnlock = false, httpAuth = false) {
-    page.debug('keepass.retrieveCredentials(callback, {1}, {2}, {3}, {4})', tab.id, url, submiturl, forceCallback);
-
     keepass.testAssociation((response) => {
         if (!response) {
             browserAction.showDefault(null, tab);
@@ -273,7 +270,6 @@ keepass.retrieveCredentials = function(callback, tab, url, submiturl, forceCallb
                 } else {
                     console.log('RetrieveCredentials for ' + url + ' rejected');
                 }
-                page.debug('keepass.retrieveCredentials() => entries.length = {1}', entries.length);
             } else if (response.error && response.errorCode) {
                 keepass.handleError(tab, response.errorCode, response.error);
                 callback([]);
@@ -579,8 +575,7 @@ keepass.getDatabaseHash = function(callback, tab, enableTimeout = false, trigger
             if (response.message && response.message === '') {
                 keepass.isKeePassXCAvailable = false;
                 keepass.handleError(tab, kpErrors.TIMEOUT_OR_NOT_CONNECTED);
-            }
-            else {
+            } else {
                 keepass.handleError(tab, response.errorCode, response.error);
             }
             callback(keepass.databaseHash);

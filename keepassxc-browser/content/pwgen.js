@@ -157,7 +157,9 @@ kpxcPassword.createDialog = function() {
     const dialog = kpxcUI.createElement('div', 'kpxc kpxc-pwgen-dialog');
     const titleBar = kpxcUI.createElement('div', 'kpxc-pwgen-titlebar', {}, tr('passwordGeneratorTitle'));
     const closeButton = kpxcUI.createElement('div', 'kpxc-pwgen-close', {}, '×');
-    closeButton.onclick = function(e) { kpxcPassword.openDialog(); };
+    closeButton.onclick = function(e) {
+        kpxcPassword.openDialog();
+    };
     titleBar.append(closeButton);
 
     const passwordRow = kpxcUI.createElement('div', 'kpxc-pwgen-password-row');
@@ -167,7 +169,7 @@ kpxcPassword.createDialog = function() {
     passwordRow.append(inputLabel);
 
     const nextFillRow = kpxcUI.createElement('div', 'kpxc-pwgen-nextfill-row');
-    const checkbox = kpxcUI.createElement('input', 'kpxc-pwgen-checkbox', {'type': 'checkbox'});
+    const checkbox = kpxcUI.createElement('input', 'kpxc-pwgen-checkbox', { 'type': 'checkbox' });
     const checkboxLabel = kpxcUI.createElement('label', 'kpxc-pwgen-checkbox-label', { 'for': 'kpxc-pwgen-checkbox' }, tr('passwordGeneratorLabel'));
     nextFillRow.append(checkbox);
     nextFillRow.append(checkboxLabel);
@@ -177,9 +179,19 @@ kpxcPassword.createDialog = function() {
     const generateButton = kpxcUI.createElement('button', 'kpxc-button kpxc-white-button', { 'id': 'kpxc-pwgen-btn-generate' }, tr('passwordGeneratorGenerate'));
     const copyButton = kpxcUI.createElement('button', 'kpxc-button', { 'id': 'kpxc-pwgen-btn-copy' }, tr('passwordGeneratorCopy'));
     const fillButton = kpxcUI.createElement('button', 'kpxc-button', { 'id': 'kpxc-pwgen-btn-fill' }, tr('passwordGeneratorFillAndCopy'));
-    generateButton.onclick = function(e) { kpxcPassword.generate(e); };
-    copyButton.onclick = function(e) { kpxcPassword.copy(e); };
-    fillButton.onclick = function(e) { kpxcPassword.fill(e); };
+
+    generateButton.onclick = function(e) {
+        kpxcPassword.generate(e);
+    };
+
+    copyButton.onclick = function(e) {
+        kpxcPassword.copy(e);
+    };
+
+    fillButton.onclick = function(e) {
+        kpxcPassword.fill(e);
+    };
+
     buttonsRow.append(generateButton);
     buttonsRow.append(copyButton);
     buttonsRow.append(fillButton);
@@ -198,7 +210,9 @@ kpxcPassword.createDialog = function() {
 
     kpxcPassword.dialog = dialog;
     kpxcPassword.titleBar = titleBar;
-    kpxcPassword.titleBar.onmousedown = function(e) { kpxcPassword.mouseDown(e) };
+    kpxcPassword.titleBar.onmousedown = function(e) {
+        kpxcPassword.mouseDown(e);
+    };
 
     kpxcPassword.generate();
 };
@@ -227,8 +241,8 @@ kpxcPassword.generate = function(e) {
 
     browser.runtime.sendMessage({
         action: 'generate_password'
-    }).then(kpxcPassword.callbackGeneratedPassword).catch((e) => {
-        console.log(e);
+    }).then(kpxcPassword.callbackGeneratedPassword).catch((err) => {
+        console.log(err);
     });
 };
 

@@ -143,31 +143,3 @@ page.removePageInformationFromNotExistingTabs = function() {
         });
     }
 };
-
-page.debugConsole = function() {
-    if (arguments.length > 1) {
-        console.log(page.sprintf(arguments[0], arguments));
-    } else {
-        console.log(arguments[0]);
-    }
-};
-
-page.sprintf = function(input, args) {
-    return input.replace(/{(\d+)}/g, (match, number) => {
-      return typeof args[number] !== 'undefined' ? (typeof args[number] === 'object' ? JSON.stringify(args[number]) : args[number]) : match;
-    });
-};
-
-page.debugDummy = function() {};
-
-page.debug = page.debugDummy;
-
-page.setDebug = function(bool) {
-    if (bool) {
-        page.debug = page.debugConsole;
-        return 'Debug mode enabled';
-    } else {
-        page.debug = page.debugDummy;
-        return 'Debug mode disabled';
-    }
-};

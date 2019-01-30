@@ -49,7 +49,7 @@ browser.tabs.onRemoved.addListener((tabId, removeInfo) => {
 browser.tabs.onActivated.addListener((activeInfo) => {
     // remove possible credentials from old tab information
     page.clearCredentials(page.currentTabId, true);
-    browserAction.removeRememberPopup(null, {'id': page.currentTabId}, true);
+    browserAction.removeRememberPopup(null, { 'id': page.currentTabId }, true);
 
     browser.tabs.get(activeInfo.tabId).then((info) => {
         if (info && info.id) {
@@ -89,7 +89,7 @@ const contextMenuItems = [
     {title: tr('contextMenuSaveCredentials'), action: 'remember_credentials'}
 ];
 
-let menuContexts = ['editable'];
+const menuContexts = [ 'editable' ];
 
 if (isFirefox()) {
     menuContexts.push('password');
@@ -103,7 +103,9 @@ for (const item of contextMenuItems) {
         onclick: (info, tab) => {
             browser.tabs.sendMessage(tab.id, {
                 action: item.action
-            }).catch((e) => {console.log(e);});
+            }).catch((err) => {
+                console.log(err);
+            });
         }
     });
 }

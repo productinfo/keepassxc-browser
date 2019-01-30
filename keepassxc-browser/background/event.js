@@ -279,7 +279,7 @@ kpxcEvent.pageSetLoginId = function(callback, tab, loginId) {
     page.loginId = loginId;
 };
 
-// all methods named in this object have to be declared BEFORE this!
+// All methods named in this object have to be declared BEFORE this!
 kpxcEvent.messageHandlers = {
     'add_credentials': keepass.addCredentials,
     'associate': keepass.associate,

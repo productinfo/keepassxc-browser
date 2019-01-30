@@ -31,7 +31,9 @@ kpxcDefine.init = function() {
     kpxcDefine.markAllUsernameFields('#kpxcDefine-fields');
 
     kpxcDefine.dialog = $('#kpxcDefine-description');;
-    kpxcDefine.dialog.onmousedown = function(e) { kpxcDefine.mouseDown(e); };
+    kpxcDefine.dialog.onmousedown = function(e) {
+        kpxcDefine.mouseDown(e);
+    };
 };
 
 kpxcDefine.mouseDown = function(e) {

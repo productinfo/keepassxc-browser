@@ -195,7 +195,7 @@ browserAction.removeRememberPopup = function(callback, tab, removeImmediately) {
         const currentMS = Date.now();
         if (removeImmediately || (data.visibleForPageUpdates <= 0 && data.redirectOffset > 0)) {
             browserAction.stackPop(tab.id);
-            browserAction.show(null, { 'id': tab.id} );
+            browserAction.show(null, { 'id': tab.id } );
             page.clearCredentials(tab.id);
             return;
         } else if (!isNaN(data.visibleForPageUpdates) && data.redirectOffset > 0 && currentMS >= data.redirectOffset) {

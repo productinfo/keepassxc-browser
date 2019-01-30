@@ -22,9 +22,9 @@ httpAuth.init = function() {
 
     // Only intercept http auth requests if the option is turned on.
     if (page.settings.autoFillAndSend) {
-        const opts = { urls: ['<all_urls>'] };
+        const opts = { urls: [ '<all_urls>' ] };
 
-        browser.webRequest.onAuthRequired.addListener(handleReq, opts, [reqType]);
+        browser.webRequest.onAuthRequired.addListener(handleReq, opts, [ reqType ]);
         browser.webRequest.onCompleted.addListener(httpAuth.requestCompleted, opts);
         browser.webRequest.onErrorOccurred.addListener(httpAuth.requestCompleted, opts);
     }
