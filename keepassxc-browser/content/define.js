@@ -178,7 +178,7 @@ kpxcDefine.isFieldSelected = function(kpxcId) {
 kpxcDefine.markAllUsernameFields = function(chooser) {
     kpxcDefine.eventFieldClick = function(e) {
         const field = e.currentTarget;
-        kpxcDefine.selection.username = field.getAttribute('kpxc-id');
+        kpxcDefine.selection.username = field.getAttribute('data-kpxc-id');
         field.classList.add('kpxcDefine-fixed-username-field');
         field.textContent = tr('username');
         field.onclick = null;
@@ -191,7 +191,7 @@ kpxcDefine.markAllUsernameFields = function(chooser) {
 kpxcDefine.markAllPasswordFields = function(chooser) {
     kpxcDefine.eventFieldClick = function(e) {
         const field = e.currentTarget;
-        kpxcDefine.selection.password = field.getAttribute('kpxc-id');
+        kpxcDefine.selection.password = field.getAttribute('data-kpxc-id');
         field.classList.add('kpxcDefine-fixed-password-field');
         field.textContent = tr('password');
         field.onclick = null;
@@ -223,7 +223,7 @@ kpxcDefine.markFields = function(chooser, pattern) {
         }
 
         if (kpxcFields.isVisible(i)) {
-            const field = kpxcUI.createElement('div', 'kpxcDefine-fixed-field', {'data-kpxc-id': i.getAttribute('data-kpxc-id')});
+            const field = kpxcUI.createElement('div', 'kpxcDefine-fixed-field', { 'data-kpxc-id': i.getAttribute('data-kpxc-id') });
             const rect = i.getBoundingClientRect();
             field.style.top = rect.top + 'px';
             field.style.left = rect.left + 'px';

@@ -212,7 +212,7 @@
         "description": "Shown when no username is set in the credentials."
     },
     "credentialsNoLoginsFound": {
-        "message": "Error No logins found.",
+        "message": "Error: No logins found.",
         "description": "Shown when no credentials are found for the current page."
     },
     "credentialsMultipleFound": {
